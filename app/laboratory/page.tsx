@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Activity, ArrowRight, AreaChart, Blocks, Sigma, TrendingUp } from "lucide-react";
 
 import { fetchLaboratoryModules } from "@/lib/laboratory";
+import { EcosystemTransferIntake } from "@/components/laboratory/ecosystem-transfer-intake";
 
 const moduleIcons = {
     "integral-studio": Sigma,
@@ -24,6 +25,7 @@ export default async function LaboratoryPage() {
 
     return (
         <div className="ax-workspace-root">
+            <EcosystemTransferIntake />
             <div className="ax-work-container">
                 <section className="ax-work-pagehead">
                     <div>

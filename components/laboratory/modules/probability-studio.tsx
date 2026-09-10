@@ -85,7 +85,7 @@ export function ProbabilityStudioModule({ module }: { module: LaboratoryModuleMe
         buildMarkdown: () => reportMarkdown,
         buildBlock: (targetId) => buildProbabilityLivePayload(state, targetId),
         publicationProfile,
-        getSavedResultMeta: () => ({ id: lastSavedResult?.id ?? null, revision: lastSavedResult?.revision ?? null }),
+        getSavedResultMeta: () => ({ id: lastSavedResult?.id ?? null, revision: lastSavedResult?.revision ?? null, scientificObjectId: typeof lastSavedResult?.metadata?.scientific_object_id === "string" ? lastSavedResult.metadata.scientific_object_id : null }),
         getDraftMeta: () => ({
             title: "Probability Analysis",
             abstract: "Exported from Probability Studio.",

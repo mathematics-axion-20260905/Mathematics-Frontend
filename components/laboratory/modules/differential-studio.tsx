@@ -235,7 +235,7 @@ export function DifferentialStudioModule({ module }: { module: LaboratoryModuleM
         buildMarkdown: () => reportMarkdown,
         buildBlock: (targetId) => buildDifferentialLivePayload(state, targetId),
         publicationProfile,
-        getSavedResultMeta: () => ({ id: lastSavedResult?.id ?? null, revision: lastSavedResult?.revision ?? null }),
+        getSavedResultMeta: () => ({ id: lastSavedResult?.id ?? null, revision: lastSavedResult?.revision ?? null, scientificObjectId: typeof lastSavedResult?.metadata?.scientific_object_id === "string" ? lastSavedResult.metadata.scientific_object_id : null }),
         getDraftMeta: () => ({
             title: "Differential Analysis",
             abstract: "Exported from Differential Studio.",

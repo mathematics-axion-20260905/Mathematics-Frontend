@@ -15,6 +15,10 @@ import {
     type WriterBridgeBlockData,
     type WriterBridgePublicationProfile,
 } from "@/lib/live-writer-bridge";
+import { exportLocalScientificObject, createLocalScientificObject } from "@/lib/ecosystem/local-object-store";
+import { getEcosystemTransferHref } from "@/lib/ecosystem/apps";
+import { publishScientificObjectTransfer } from "@/lib/ecosystem/transfer";
+import { resolveActiveProjectId } from "@/lib/ecosystem/project-context";
 
 type WriterBridgeExportState = "idle" | "copied" | "sent";
 type WriterBridgeGuideMode = "copy" | "send" | null;
@@ -29,7 +33,7 @@ type UseLaboratoryWriterBridgeOptions = {
     buildMarkdown: () => string;
     buildBlock: (targetId: string) => WriterBridgeBlockData;
     publicationProfile: WriterBridgePublicationProfile;
-    getSavedResultMeta?: () => { id?: string | null; revision?: number | null } | null;
+    getSavedResultMeta?: () => { id?: string | null; revision?: number | null; scientificObjectId?: string | null } | null;
     getDraftMeta?: (block: WriterBridgeBlockData) => {
         title?: string;
         abstract?: string;
@@ -67,7 +71,7 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
         closeGuide();
     }, [buildBlock, buildMarkdown, closeGuide, publicationProfile, ready, setExportState, sourceLabel]);
 
-    const sendToWriter = React.useCallback(() => {
+    const sendToWriter = React.useCallback(async () => {
         if (!ready) {
             return;
         }
@@ -80,6 +84,44 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
             block.savedResultRevision = savedMeta.revision ?? undefined;
         }
         const draftMeta = getDraftMeta?.(block);
+
+        const projectId = resolveActiveProjectId();
+        if (projectId) {
+            try {
+                let objectId = savedMeta?.scientificObjectId || null;
+                if (!objectId) {
+                    const object = await createLocalScientificObject({
+                        projectId,
+                        kind: "calculation",
+                        domain: `mathematics/${sourceLabel.toLowerCase().replace(/\s+/g, "-")}`,
+                        title: block.title,
+                        sourceApp: "math",
+                        payload: {
+                            type: "laboratory-result",
+                            title: block.title,
+                            summary: block.summary,
+                            report_markdown: applyPublicationProfileToMarkdown(buildMarkdown(), block, publicationProfile),
+                            structured_payload: block,
+                        },
+                        provenance: {
+                            sourceApp: "math",
+                            engine: "Axion Mathematics Laboratory",
+                            executionTarget: "this-device",
+                            finishedAt: new Date().toISOString(),
+                        },
+                    });
+                    objectId = object.id;
+                }
+                const transfer = await publishScientificObjectTransfer(await exportLocalScientificObject(objectId));
+                setExportState("sent");
+                closeGuide();
+                window.location.assign(getEcosystemTransferHref("writer", transfer.transferId, projectId));
+                return;
+            } catch (error) {
+                console.error("Scientific Object relay failed; falling back to same-origin Writer import", error);
+            }
+        }
+
         const requestId = queueWriterImport({
             version: 1,
             markdown: applyPublicationProfileToMarkdown(buildMarkdown(), block, publicationProfile),
@@ -92,7 +134,7 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
         setExportState("sent");
         closeGuide();
         window.location.assign(createLaboratoryWriterDraftHref(requestId));
-    }, [buildBlock, buildMarkdown, closeGuide, getDraftMeta, publicationProfile, ready, setExportState, sourceLabel]);
+    }, [buildBlock, buildMarkdown, closeGuide, getDraftMeta, getSavedResultMeta, publicationProfile, ready, setExportState, sourceLabel]);
 
     const pushLiveResult = React.useCallback(() => {
         const run = async () => {

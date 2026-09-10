@@ -95,7 +95,7 @@ export function MatrixStudioModule({ module }: { module: LaboratoryModuleMeta })
         buildMarkdown: () => reportMarkdown,
         buildBlock: (targetId) => buildMatrixLivePayload(state, targetId),
         publicationProfile,
-        getSavedResultMeta: () => ({ id: lastSavedResult?.id ?? null, revision: lastSavedResult?.revision ?? null }),
+        getSavedResultMeta: () => ({ id: lastSavedResult?.id ?? null, revision: lastSavedResult?.revision ?? null, scientificObjectId: typeof lastSavedResult?.metadata?.scientific_object_id === "string" ? lastSavedResult.metadata.scientific_object_id : null }),
         getDraftMeta: () => ({
             title: "Matrix Analysis",
             abstract: "Exported from Matrix Studio.",
