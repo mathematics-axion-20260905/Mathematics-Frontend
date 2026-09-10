@@ -16,6 +16,7 @@ export function ReportView({
     saveError,
     lastSavedResultTitle,
     sendToWriter,
+    sendToNotebook,
     pushLiveResult,
     liveTargets,
     selectedLiveTargetId,
@@ -30,6 +31,7 @@ export function ReportView({
     saveError: string | null;
     lastSavedResultTitle: string | null;
     sendToWriter: () => void;
+    sendToNotebook: () => void;
     pushLiveResult: () => void;
     liveTargets: LiveTarget[];
     selectedLiveTargetId: string | null;
@@ -123,6 +125,7 @@ export function ReportView({
             saveError={saveError}
             lastSavedResultTitle={lastSavedResultTitle}
             sendToWriter={sendToWriter}
+            sendToNotebook={sendToNotebook}
             pushLiveResult={pushLiveResult}
             liveTargets={liveTargets}
             selectedLiveTargetId={selectedLiveTargetId}

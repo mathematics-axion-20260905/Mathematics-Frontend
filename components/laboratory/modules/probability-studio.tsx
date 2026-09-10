@@ -76,7 +76,7 @@ export function ProbabilityStudioModule({ module }: { module: LaboratoryModuleMe
             preset: state.activePresetLabel ?? null,
         }),
     });
-    const { copyMarkdownExport, sendToWriter, pushLiveResult } = useLaboratoryWriterBridge({
+    const { copyMarkdownExport, sendToWriter, sendToNotebook, pushLiveResult } = useLaboratoryWriterBridge({
         ready: Boolean(state.analyticSolution || state.result.finalFormula || state.summary.sampleSize),
         sourceLabel: "Probability Studio",
         liveTargets,
@@ -121,6 +121,7 @@ export function ProbabilityStudioModule({ module }: { module: LaboratoryModuleMe
                         saveError={saveError}
                         lastSavedResultTitle={lastSavedResult?.title ?? null}
                         sendToWriter={sendToWriter}
+                        sendToNotebook={sendToNotebook}
                         pushLiveResult={pushLiveResult}
                         liveTargets={liveTargets.map((target) => ({ id: `${target.paperId}::${target.id}`, title: `${target.paperTitle} · ${target.title}` }))}
                         selectedLiveTargetId={selectedLiveTargetId || null}
@@ -132,7 +133,7 @@ export function ProbabilityStudioModule({ module }: { module: LaboratoryModuleMe
             default:
                 return null;
         }
-    }, [actions, copyMarkdownExport, liveTargets, publicationProfile, pushLiveResult, saveError, saveResult, saveState, selectedLiveTargetId, sendToWriter, setSelectedLiveTargetId, state, lastSavedResult?.title]);
+    }, [actions, copyMarkdownExport, liveTargets, publicationProfile, pushLiveResult, saveError, saveResult, saveState, selectedLiveTargetId, sendToNotebook, sendToWriter, setSelectedLiveTargetId, state, lastSavedResult?.title]);
 
     return (
         <div className="flex grow flex-col overflow-hidden rounded-3xl border border-border/40 bg-background/50">

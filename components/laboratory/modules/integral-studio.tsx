@@ -175,7 +175,7 @@ export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta 
         [inputValidationSignals, warningSignals],
     );
 
-    const { copyMarkdownExport, sendToWriter, pushLiveResult } = useLaboratoryWriterBridge({
+    const { copyMarkdownExport, sendToWriter, sendToNotebook, pushLiveResult } = useLaboratoryWriterBridge({
         ready: Boolean(summary && !solverWarning),
         sourceLabel: "Integral Studio",
         liveTargets: liveBridge.liveTargets,
@@ -1637,6 +1637,7 @@ export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta 
                         saveError={saveError}
                         lastSavedResultTitle={lastSavedResult?.title ?? null}
                         sendToWriter={sendToWriter}
+                        sendToNotebook={sendToNotebook}
                         reportReadinessCards={reportReadinessCards}
                         annotationPanelProps={annotationPanelProps}
                         liveTargets={liveBridge.liveTargets.map((target) => ({ id: `${target.paperId}::${target.id}`, title: `${target.paperTitle} · ${target.title}` }))}

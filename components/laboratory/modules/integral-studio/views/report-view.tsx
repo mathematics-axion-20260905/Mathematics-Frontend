@@ -21,6 +21,7 @@ type ReportViewProps = {
     saveError: string | null;
     lastSavedResultTitle: string | null;
     sendToWriter: () => void;
+    sendToNotebook: () => void;
     reportReadinessCards: StudioMetricCard[];
     annotationPanelProps: React.ComponentProps<typeof AnnotationPanel>;
     liveTargets: LiveTarget[];
@@ -43,6 +44,7 @@ export function ReportView({
     saveError,
     lastSavedResultTitle,
     sendToWriter,
+    sendToNotebook,
     reportReadinessCards,
     annotationPanelProps,
     liveTargets,
@@ -68,6 +70,7 @@ export function ReportView({
             saveError={saveError}
             lastSavedResultTitle={lastSavedResultTitle}
             sendToWriter={sendToWriter}
+            sendToNotebook={sendToNotebook}
             pushLiveResult={pushLiveResult}
             liveTargets={liveTargets}
             selectedLiveTargetId={selectedLiveTargetId}

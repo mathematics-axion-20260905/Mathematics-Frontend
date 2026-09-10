@@ -226,7 +226,7 @@ export function DifferentialStudioModule({ module }: { module: LaboratoryModuleM
             solvePhase: state.solvePhase,
         }),
     });
-    const { copyMarkdownExport, sendToWriter, pushLiveResult } = useLaboratoryWriterBridge({
+    const { copyMarkdownExport, sendToWriter, sendToNotebook, pushLiveResult } = useLaboratoryWriterBridge({
         ready: Boolean((state.summary || state.analyticSolution) && !(state.error || state.solveErrorMessage)),
         sourceLabel: "Differential Studio",
         liveTargets,
@@ -317,6 +317,7 @@ export function DifferentialStudioModule({ module }: { module: LaboratoryModuleM
                         saveError={saveError}
                         lastSavedResultTitle={lastSavedResult?.title ?? null}
                         sendToWriter={sendToWriter}
+                        sendToNotebook={sendToNotebook}
                         pushLiveResult={pushLiveResult}
                         liveTargets={liveTargets.map((target) => ({ id: `${target.paperId}::${target.id}`, title: `${target.paperTitle} · ${target.title}` }))}
                         selectedLiveTargetId={selectedLiveTargetId || null}
@@ -328,7 +329,7 @@ export function DifferentialStudioModule({ module }: { module: LaboratoryModuleM
             default:
                 return null;
         }
-    }, [activeTab, actions, copyMarkdownExport, liveTargets, publicationProfile, pushLiveResult, saveError, saveResult, saveState, selectedLiveTargetId, sendToWriter, setSelectedLiveTargetId, state, visibleSignals, lastSavedResult?.title]);
+    }, [activeTab, actions, copyMarkdownExport, liveTargets, publicationProfile, pushLiveResult, saveError, saveResult, saveState, selectedLiveTargetId, sendToNotebook, sendToWriter, setSelectedLiveTargetId, state, visibleSignals, lastSavedResult?.title]);
 
     return (
         <div className="flex grow flex-col overflow-hidden rounded-3xl border border-border/40 bg-background/50">

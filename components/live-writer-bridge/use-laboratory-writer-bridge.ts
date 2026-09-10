@@ -16,7 +16,7 @@ import {
     type WriterBridgePublicationProfile,
 } from "@/lib/live-writer-bridge";
 import { exportLocalScientificObject, createLocalScientificObject } from "@/lib/ecosystem/local-object-store";
-import { getEcosystemTransferHref } from "@/lib/ecosystem/apps";
+import { getEcosystemObjectHref, getEcosystemTransferHref, type EcosystemApp } from "@/lib/ecosystem/apps";
 import { publishScientificObjectTransfer } from "@/lib/ecosystem/transfer";
 import { resolveActiveProjectId } from "@/lib/ecosystem/project-context";
 
@@ -71,7 +71,7 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
         closeGuide();
     }, [buildBlock, buildMarkdown, closeGuide, publicationProfile, ready, setExportState, sourceLabel]);
 
-    const sendToWriter = React.useCallback(async () => {
+    const sendToApp = React.useCallback(async (targetApp: Extract<EcosystemApp, "notebook" | "writer">) => {
         if (!ready) {
             return;
         }
@@ -87,8 +87,8 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
 
         const projectId = resolveActiveProjectId();
         if (projectId) {
+            let objectId = savedMeta?.scientificObjectId || null;
             try {
-                let objectId = savedMeta?.scientificObjectId || null;
                 if (!objectId) {
                     const object = await createLocalScientificObject({
                         projectId,
@@ -115,11 +115,20 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
                 const transfer = await publishScientificObjectTransfer(await exportLocalScientificObject(objectId));
                 setExportState("sent");
                 closeGuide();
-                window.location.assign(getEcosystemTransferHref("writer", transfer.transferId, projectId));
+                window.location.assign(getEcosystemTransferHref(targetApp, transfer.transferId, projectId));
                 return;
             } catch (error) {
-                console.error("Scientific Object relay failed; falling back to same-origin Writer import", error);
+                console.error("Scientific Object relay failed; falling back to same-origin object import", error);
+                if (!objectId) {
+                    return;
+                }
+                window.location.assign(getEcosystemObjectHref(targetApp, projectId, objectId));
+                return;
             }
+        }
+
+        if (targetApp !== "writer") {
+            return;
         }
 
         const requestId = queueWriterImport({
@@ -135,6 +144,9 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
         closeGuide();
         window.location.assign(createLaboratoryWriterDraftHref(requestId));
     }, [buildBlock, buildMarkdown, closeGuide, getDraftMeta, getSavedResultMeta, publicationProfile, ready, setExportState, sourceLabel]);
+
+    const sendToWriter = React.useCallback(() => sendToApp("writer"), [sendToApp]);
+    const sendToNotebook = React.useCallback(() => sendToApp("notebook"), [sendToApp]);
 
     const pushLiveResult = React.useCallback(() => {
         const run = async () => {
@@ -175,6 +187,7 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
     return {
         copyMarkdownExport,
         sendToWriter,
+        sendToNotebook,
         pushLiveResult,
     };
 }

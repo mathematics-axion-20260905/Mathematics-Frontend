@@ -161,6 +161,7 @@ export function LaboratoryReportLayout({
     saveError = null,
     lastSavedResultTitle,
     sendToWriter,
+    sendToNotebook,
     pushLiveResult,
     liveTargets,
     selectedLiveTargetId,
@@ -183,6 +184,7 @@ export function LaboratoryReportLayout({
     saveError?: string | null;
     lastSavedResultTitle?: string | null;
     sendToWriter: () => void;
+    sendToNotebook: () => void;
     pushLiveResult: () => void;
     liveTargets: ReportLiveTarget[];
     selectedLiveTargetId: string | null;
@@ -318,6 +320,9 @@ export function LaboratoryReportLayout({
                         </button>
                         <button onClick={sendToWriter} className="site-btn-accent px-6">
                             Send to Writer
+                        </button>
+                        <button onClick={sendToNotebook} className="site-btn px-6">
+                            Send to Notebook
                         </button>
                     </div>
                     <div className="text-sm text-muted-foreground">
