@@ -1,5 +1,7 @@
 import {
   SCIENTIFIC_OBJECT_SCHEMA_VERSION,
+  deserializeScientificObject,
+  serializeScientificObject,
   type EcosystemAppId,
   type ScientificArtifact,
   type ScientificObject,
@@ -41,10 +43,12 @@ async function openDatabase(): Promise<IDBDatabase> {
   });
 }
 function revisionKey(objectId: string, revision: number) { return `${objectId}:${revision}`; }
+async function hashPayload(payload: unknown) { if (typeof crypto === "undefined" || !crypto.subtle || typeof TextEncoder === "undefined") return undefined; const serialized = JSON.stringify(payload); if (serialized === undefined) return undefined; const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(serialized)); return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join(""); }
+async function verifyPayloadHashes(revisions: Array<ScientificObjectRevision>) { if (typeof crypto === "undefined" || !crypto.subtle) return; for (const revision of revisions) { if (revision.contentHash && revision.contentHash !== await hashPayload(revision.payload)) throw new Error("SCIENTIFIC_OBJECT_CONTENT_HASH_MISMATCH"); } }
 
 export async function createLocalScientificObject<TPayload>(input: { projectId: string; kind: ScientificObjectKind; domain?: string; title: string; sourceApp: EcosystemAppId; payload: TPayload; provenance: ScientificProvenance; metadata?: Record<string, unknown>; artifacts?: ScientificArtifact[]; }): Promise<ScientificObject<TPayload>> {
   const db = await openDatabase(); const id = makeId(); const now = new Date().toISOString();
-  const revision: ScientificObjectRevision<TPayload> = { objectId: id, revision: 1, payload: input.payload, provenance: input.provenance, artifacts: input.artifacts, createdAt: now };
+  const revision: ScientificObjectRevision<TPayload> = { objectId: id, revision: 1, payload: input.payload, provenance: input.provenance, artifacts: input.artifacts, contentHash: await hashPayload(input.payload), createdAt: now };
   const object: ScientificObject<TPayload> = { id, projectId: input.projectId, kind: input.kind, domain: input.domain, schemaVersion: SCIENTIFIC_OBJECT_SCHEMA_VERSION, title: input.title, sourceApp: input.sourceApp, currentRevision: 1, metadata: input.metadata, revision, createdAt: now, updatedAt: now };
   const transaction = db.transaction([OBJECTS_STORE, REVISIONS_STORE], "readwrite");
   transaction.objectStore(OBJECTS_STORE).put({ ...object, revision: undefined });
@@ -55,7 +59,7 @@ export async function createLocalScientificObject<TPayload>(input: { projectId: 
 export async function appendLocalObjectRevision<TPayload>(objectId: string, payload: TPayload, provenance: ScientificProvenance, artifacts?: ScientificArtifact[]): Promise<ScientificObjectRevision<TPayload>> {
   const db = await openDatabase(); const transaction = db.transaction([OBJECTS_STORE, REVISIONS_STORE], "readwrite"); const objectStore = transaction.objectStore(OBJECTS_STORE); const current = (await requestResult(objectStore.get(objectId))) as ScientificObject | undefined;
   if (!current) { transaction.abort(); db.close(); throw new Error("SCIENTIFIC_OBJECT_NOT_FOUND"); }
-  const nextRevision = current.currentRevision + 1; const now = new Date().toISOString(); const revision: ScientificObjectRevision<TPayload> = { objectId, revision: nextRevision, payload, provenance, artifacts, createdAt: now };
+  const nextRevision = current.currentRevision + 1; const now = new Date().toISOString(); const revision: ScientificObjectRevision<TPayload> = { objectId, revision: nextRevision, payload, provenance, artifacts, contentHash: await hashPayload(payload), createdAt: now };
   objectStore.put({ ...current, currentRevision: nextRevision, updatedAt: now }); transaction.objectStore(REVISIONS_STORE).put({ ...revision, key: revisionKey(objectId, nextRevision) } satisfies StoredRevision<TPayload>); await transactionDone(transaction); db.close(); return revision;
 }
 
@@ -79,6 +83,21 @@ export async function createLocalScientificReference(input: { projectId: string;
 }
 
 export async function resolveLocalScientificReference<TPayload = unknown>(reference: ScientificObjectReference): Promise<ScientificObject<TPayload> | ScientificObjectRevision<TPayload> | undefined> {
-  if (reference.mode === "frozen") return undefined;
   const object = await getLocalScientificObject<TPayload>(reference.objectId); if (!object) return undefined; if (reference.mode === "live") return object; if (reference.revision == null) return undefined; return await getLocalObjectRevision<TPayload>(reference.objectId, reference.revision);
+}
+
+export async function exportLocalScientificObject<TPayload = unknown>(id: string): Promise<string> {
+  const db = await openDatabase(); const transaction = db.transaction([OBJECTS_STORE, REVISIONS_STORE], "readonly");
+  const object = (await requestResult(transaction.objectStore(OBJECTS_STORE).get(id))) as ScientificObject<TPayload> | undefined;
+  if (!object) { await transactionDone(transaction); db.close(); throw new Error("SCIENTIFIC_OBJECT_NOT_FOUND"); }
+  const stored = (await requestResult(transaction.objectStore(REVISIONS_STORE).index("byObject").getAll(id))) as StoredRevision<TPayload>[];
+  await transactionDone(transaction); db.close();
+  return serializeScientificObject(object, stored.map(({ key: _key, ...revision }) => revision));
+}
+
+export async function importLocalScientificObject<TPayload = unknown>(serialized: string): Promise<ScientificObject<TPayload>> {
+  const envelope = deserializeScientificObject<TPayload>(serialized); await verifyPayloadHashes(envelope.revisions); const db = await openDatabase(); const transaction = db.transaction([OBJECTS_STORE, REVISIONS_STORE], "readwrite"); const objects = transaction.objectStore(OBJECTS_STORE);
+  if (await requestResult(objects.get(envelope.object.id))) { transaction.abort(); db.close(); throw new Error("SCIENTIFIC_OBJECT_ALREADY_EXISTS"); }
+  objects.put(envelope.object); for (const revision of envelope.revisions) transaction.objectStore(REVISIONS_STORE).put({ ...revision, key: revisionKey(revision.objectId, revision.revision) } satisfies StoredRevision<TPayload>);
+  await transactionDone(transaction); db.close(); const current = envelope.revisions.find((revision) => revision.revision === envelope.object.currentRevision) ?? envelope.revisions.at(-1); return current ? { ...envelope.object, revision: current } : envelope.object;
 }

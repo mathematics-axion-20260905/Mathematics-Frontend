@@ -29,6 +29,47 @@ body {
   background-image: none;
 }
 
+/* Legacy Laboratory views keep their domain layout, but all surrounding geometry
+ * and neutral chrome must resolve through the ecosystem tokens. */
+.lab-workspace-stage [class*="rounded-3xl"],
+.lab-workspace-stage [class*="rounded-2xl"],
+.lab-workspace-stage [class*="rounded-xl"] {
+  border-radius: var(--ax-work-panel-radius) !important;
+}
+
+.lab-workspace-stage [class*="shadow-sm"],
+.lab-workspace-stage [class*="shadow-md"],
+.lab-workspace-stage [class*="shadow-lg"],
+.lab-workspace-stage [class*="shadow-xl"] {
+  box-shadow: var(--ax-work-shadow) !important;
+}
+
+.lab-workspace-stage [class*="border-border/"] {
+  border-color: var(--ax-work-line) !important;
+}
+
+.lab-workspace-stage [class*="bg-background"] {
+  background: var(--ax-surface) !important;
+}
+
+.lab-workspace-stage [class*="bg-muted/"] {
+  background: var(--ax-surface-soft) !important;
+}
+
+.lab-workspace-stage [class*="text-[#184eb8]"] { color: var(--ax-accent) !important; }
+.lab-workspace-stage [class*="text-[#171a20]"] { color: var(--ax-text) !important; }
+.lab-workspace-stage [class*="text-[#949ba5]"],
+.lab-workspace-stage [class*="text-[#7b8490]"],
+.lab-workspace-stage [class*="text-[#747d88]"] { color: var(--ax-text-faint) !important; }
+.lab-workspace-stage [class*="text-[#66707c]"],
+.lab-workspace-stage [class*="text-[#59616c]"],
+.lab-workspace-stage [class*="text-[#303640]"] { color: var(--ax-text-soft) !important; }
+.lab-workspace-stage [class*="border-[#dfe4ea]"],
+.lab-workspace-stage [class*="border-[#e2e6ec]"],
+.lab-workspace-stage [class*="border-[#e8ebef]"] { border-color: var(--ax-work-line) !important; }
+.lab-workspace-stage [class*="bg-[#f8fafe]"],
+.lab-workspace-stage [class*="bg-[#fcfdff]"] { background: var(--ax-surface-soft) !important; }
+
 .site-shell::before,
 .glow-effect::after,
 .hero-glow {
