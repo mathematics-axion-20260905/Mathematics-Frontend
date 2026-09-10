@@ -8,14 +8,14 @@ describe('fetchPublic', () => {
         vi.clearAllMocks()
     })
 
-    it('should construct absolute URL correctly', async () => {
+    it('should construct a same-origin API URL by default', async () => {
         const mockResponse = { ok: true, json: () => Promise.resolve({ data: 'test' }) } as Response;
         (global.fetch as Mock).mockResolvedValue(mockResponse)
 
         await fetchPublic('/api/test/')
         
         expect(global.fetch).toHaveBeenCalledWith(
-            expect.stringContaining('http://127.0.0.1:8000/api/test/'),
+            '/api/test/',
             expect.anything()
         )
     })

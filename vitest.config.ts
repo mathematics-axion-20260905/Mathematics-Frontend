@@ -11,6 +11,11 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    environmentOptions: {
+      jsdom: {
+        url: 'http://localhost/',
+      },
+    },
     setupFiles: ['./vitest.setup.ts'],
     exclude: ['node_modules/**', '.next/**', 'e2e/**'],
   },
