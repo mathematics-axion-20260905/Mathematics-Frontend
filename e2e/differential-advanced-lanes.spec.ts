@@ -70,7 +70,7 @@ function buildDifferentialResponse(body: Record<string, string>) {
 }
 
 async function mockDifferentialApi(page: Page) {
-    await page.route("http://127.0.0.1:8000/api/laboratory/solve/differential/", async (route) => {
+    await page.route("**/api/laboratory/solve/differential/", async (route) => {
         const body = route.request().postDataJSON() as Record<string, string>;
         await route.fulfill({
             status: 200,
@@ -89,11 +89,12 @@ test.describe("Differential advanced lanes", () => {
         await page.goto("/laboratory/differential-studio");
 
         await page.getByTestId("diff-mode-select").selectOption("ode");
-        await page.getByTestId("diff-ode-equation").fill("y' = y*(1-y)");
-        await page.getByTestId("diff-ode-condition").fill("y(0)=0.25");
+        await page.getByTestId("diff-expression-input").fill("y' = y; y(0)=1");
+        await page.getByTestId("diff-variable-input").fill("x");
+        await page.getByTestId("diff-point-input").fill("y(0)=1");
         await page.getByTestId("diff-solve-button").click();
 
-        await expect(page.getByTestId("diff-expression-input")).toHaveValue("y' = y*(1-y); y(0)=0.25");
+        await expect(page.getByTestId("diff-expression-input")).toHaveValue("y' = y; y(0)=1");
         await expect(page.getByTestId("diff-ode-phase-panel")).toBeVisible();
         await expect(page.getByTestId("diff-ode-phase-panel").getByText("Phase Portrait")).toBeVisible();
     });
@@ -102,12 +103,12 @@ test.describe("Differential advanced lanes", () => {
         await page.goto("/laboratory/differential-studio");
 
         await page.getByTestId("diff-mode-select").selectOption("pde");
-        await page.getByTestId("diff-pde-equation").fill("u_t = 0.2*u_xx");
-        await page.getByTestId("diff-pde-initial").fill("u(x,0)=sin(x)");
-        await page.getByTestId("diff-pde-variables").fill("x, t");
+        await page.getByTestId("diff-expression-input").fill("u_t = u_x; u(x,0)=sin(x)");
+        await page.getByTestId("diff-variable-input").fill("x, t");
+        await page.getByTestId("diff-point-input").fill("u(x,0)=sin(x)");
         await page.getByTestId("diff-solve-button").click();
 
-        await expect(page.getByTestId("diff-expression-input")).toHaveValue("u_t = 0.2*u_xx; u(x,0)=sin(x)");
+        await expect(page.getByTestId("diff-expression-input")).toHaveValue("u_t = u_x; u(x,0)=sin(x)");
         await expect(page.getByTestId("diff-pde-heatmap")).toBeVisible();
         await expect(page.getByTestId("diff-pde-profile-panel")).toBeVisible();
     });
@@ -116,15 +117,13 @@ test.describe("Differential advanced lanes", () => {
         await page.goto("/laboratory/differential-studio");
 
         await page.getByTestId("diff-mode-select").selectOption("sde");
-        await page.getByTestId("diff-sde-drift").fill("0.25*X");
-        await page.getByTestId("diff-sde-diffusion").fill("0.15*X");
-        await page.getByTestId("diff-sde-x0").fill("1");
-        await page.getByTestId("diff-sde-range").fill("0,1");
-        await page.getByTestId("diff-sde-steps").fill("120");
+        await page.getByTestId("diff-expression-input").fill("dX = 0.4*X*dt + 0.2*X*dW; X(0)=1; t:[0,1]; n=64");
+        await page.getByTestId("diff-variable-input").fill("t");
+        await page.getByTestId("diff-point-input").fill("X(0)=1; t:[0,1]; n=64");
         await page.getByTestId("diff-solve-button").click();
 
-        await expect(page.getByTestId("diff-expression-input")).toHaveValue("dX = 0.25*X*dt + 0.15*X*dW");
-        await expect(page.getByTestId("diff-point-input")).toHaveValue("X(0)=1; t:[0,1]; n=120");
+        await expect(page.getByTestId("diff-expression-input")).toHaveValue("dX = 0.4*X*dt + 0.2*X*dW; X(0)=1; t:[0,1]; n=64");
+        await expect(page.getByTestId("diff-point-input")).toHaveValue("X(0)=1; t:[0,1]; n=64");
         await expect(page.getByTestId("diff-sde-ensemble-panel")).toBeVisible();
         await expect(page.getByText("Terminal Distribution")).toBeVisible();
     });

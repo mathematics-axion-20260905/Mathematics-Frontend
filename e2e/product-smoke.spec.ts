@@ -22,7 +22,7 @@ test.describe("Laboratory product smoke", () => {
 
         await expect(page.getByText("Integral setup")).toBeVisible();
         await expect(page.getByText("Visualization").first()).toBeVisible();
-        await expect(page.getByRole("button", { name: /^Solve$/ })).toBeVisible();
+        await expect(page.getByRole("button", { name: /^Solve$/ }).first()).toBeVisible();
         await expect(page.getByText("Advanced settings")).toBeVisible();
     });
 
