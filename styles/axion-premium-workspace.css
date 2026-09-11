@@ -117,8 +117,7 @@
 
 .ax-work-subnav {
   border-bottom: 1px solid var(--ax-work-line);
-  background: color-mix(in srgb, var(--ax-surface) 96%, transparent);
-  backdrop-filter: blur(18px) saturate(125%);
+  background: var(--ax-surface);
 }
 
 .ax-work-subnav-inner {
@@ -140,9 +139,8 @@
 .site-shell > .border-b:first-child {
   min-height: var(--ax-work-header) !important;
   border-color: var(--ax-work-line) !important;
-  background: color-mix(in srgb, var(--ax-surface) 95%, transparent) !important;
+  background: var(--ax-surface) !important;
   box-shadow: none !important;
-  backdrop-filter: blur(18px) saturate(125%);
 }
 
 #notebook > header > div,

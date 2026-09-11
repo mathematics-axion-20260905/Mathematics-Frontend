@@ -5,8 +5,8 @@ import { useEffect, useRef } from "react";
 type Point3 = { x: number; y: number; z: number; edge: number };
 type ProjectedPoint = Point3 & { sx: number; sy: number; depth: number };
 
-const RINGS = 15;
-const SEGMENTS = 44;
+const RINGS = 12;
+const SEGMENTS = 36;
 const RADIUS = 2.65;
 const TARGET_FRAME_MS = 1000 / 30;
 
@@ -198,7 +198,7 @@ export function AnimatedMathSurface() {
       const rect = container.getBoundingClientRect();
       width = Math.max(320, rect.width);
       height = Math.max(330, rect.height);
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       canvas.style.width = `${width}px`;
