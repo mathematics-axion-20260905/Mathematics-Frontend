@@ -161,7 +161,7 @@ export function CartesianPlot({
                 </div>
             )}
             <div style={{ height, minHeight: Math.max(1, height) }} className="relative w-full min-h-0 px-2 py-4">
-                <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={Math.max(1, height)} debounce={120}>
+                <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={Math.max(1, height)} initialDimension={{ width: 640, height: Math.max(1, height) }} debounce={120}>
                     <ComposedChart data={data} margin={chartMargin}>
                         <CartesianGrid 
                             strokeDasharray="4 4" 
