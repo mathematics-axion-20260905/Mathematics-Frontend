@@ -10,6 +10,7 @@ import {
   type ScientificObjectRevision,
   type ScientificProvenance,
 } from "./contracts";
+import { createClientId } from "../client-id";
 
 const DB_NAME = "axion-science-local-v1";
 const DB_VERSION = 1;
@@ -21,8 +22,7 @@ interface StoredRevision<TPayload = unknown> extends ScientificObjectRevision<TP
 export interface StoredScientificReference { id: string; projectId: string; containerObjectId?: string; role?: string; reference: ScientificObjectReference; createdAt: string; }
 
 function makeId() {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
-  return `local-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  return createClientId("local");
 }
 function requireIndexedDb() { if (typeof indexedDB === "undefined") throw new Error("LOCAL_OBJECT_STORE_UNAVAILABLE"); }
 function requestResult<T>(request: IDBRequest<T>): Promise<T> { return new Promise((resolve, reject) => { request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error || new Error("INDEXEDDB_REQUEST_FAILED")); }); }

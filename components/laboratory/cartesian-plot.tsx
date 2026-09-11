@@ -160,8 +160,8 @@ export function CartesianPlot({
                     <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{title}</h4>
                 </div>
             )}
-            <div style={{ height }} className="relative w-full min-h-0 px-2 py-4">
-                <ResponsiveContainer width="100%" height="100%" debounce={100}>
+            <div style={{ height, minHeight: Math.max(1, height) }} className="relative w-full min-h-0 px-2 py-4">
+                <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={Math.max(1, height)} debounce={120}>
                     <ComposedChart data={data} margin={chartMargin}>
                         <CartesianGrid 
                             strokeDasharray="4 4" 
@@ -209,7 +209,8 @@ export function CartesianPlot({
                                     fill={highlightInterval.color || "var(--accent)"}
                                     fillOpacity={0.15}
                                     name={highlightInterval.label || "Integrated Area"}
-                                    isAnimationActive={true}
+                                    isAnimationActive={false}
+                                    animationDuration={0}
                                 />
                                 <ReferenceLine 
                                     x={highlightInterval.start} 
@@ -237,8 +238,8 @@ export function CartesianPlot({
                                 strokeWidth={2.5}
                                 dot={false}
                                 activeDot={{ r: 5, strokeWidth: 1.5, stroke: 'var(--background)' }}
-                                animationDuration={1000}
-                                isAnimationActive={true}
+                                animationDuration={0}
+                                isAnimationActive={false}
                                 connectNulls
                             />
                         ))}

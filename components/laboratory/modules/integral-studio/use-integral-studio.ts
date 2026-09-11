@@ -44,6 +44,7 @@ import { GeometryLaneService } from "./services/geometry-lane-service";
 
 // Shared Services
 import { LaboratoryFormattingService } from "@/components/laboratory/services/formatting-service";
+import { createClientId } from "@/lib/client-id";
 
 const STUDIO_SHOWCASE_TEMPLATE_ID = "studio-walkthrough";
 const STUDIO_SHOWCASE_SNAPSHOT: IntegralSolveSnapshot = {
@@ -634,10 +635,7 @@ export function useIntegralStudio(module: LaboratoryModuleMeta) {
         }
 
         const nextAnnotation: IntegralAnnotation = {
-            id:
-                typeof crypto !== "undefined" && "randomUUID" in crypto
-                    ? crypto.randomUUID()
-                    : `int-note-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            id: createClientId("int-note"),
             title: annotationTitle.trim() || `${mode} integral observation`,
             note: annotationNote.trim() || "Current estimate bo'yicha qisqa observation saqlandi.",
             anchor: annotationAnchor,
@@ -651,10 +649,7 @@ export function useIntegralStudio(module: LaboratoryModuleMeta) {
 
     function saveCurrentExperiment() {
         const nextExperiment: IntegralSavedExperiment = {
-            id:
-                typeof crypto !== "undefined" && "randomUUID" in crypto
-                    ? crypto.randomUUID()
-                    : `int-exp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            id: createClientId("int-exp"),
             label: experimentLabel.trim() || `${mode} integral`,
             savedAt: new Date().toISOString(),
             mode,
