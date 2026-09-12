@@ -5,6 +5,8 @@ export type RemoteScientificObjectRecord = ScientificObject & {
   contentHash?: string;
 };
 
+export type RemoteProjectRecord = { slug: string; title: string; description?: string };
+
 function coreUrl(path: string) {
   const base = (process.env.NEXT_PUBLIC_ECOSYSTEM_CORE_URL || "").replace(/\/$/, "");
   return base ? `${base}${path}` : null;
@@ -43,4 +45,13 @@ export async function getRemoteScientificObject(objectId: string): Promise<Remot
   if (response.status === 404) return null;
   if (!response.ok) throw new Error(await parseError(response));
   return await response.json() as RemoteScientificObjectRecord;
+}
+
+export async function getRemoteProject(projectId: string): Promise<RemoteProjectRecord | null> {
+  const endpoint = coreUrl(`/projects/${encodeURIComponent(projectId)}/`);
+  if (!endpoint) return null;
+  const response = await fetch(endpoint, { cache: "no-store" });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(await parseError(response));
+  return await response.json() as RemoteProjectRecord;
 }
