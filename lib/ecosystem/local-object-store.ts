@@ -11,6 +11,7 @@ import {
   type ScientificProvenance,
 } from "./contracts";
 import { createClientId } from "../client-id";
+import { syncScientificObject } from "./remote-object-store";
 
 const DB_NAME = "axion-science-local-v1";
 const DB_VERSION = 1;
@@ -53,14 +54,14 @@ export async function createLocalScientificObject<TPayload>(input: { projectId: 
   const transaction = db.transaction([OBJECTS_STORE, REVISIONS_STORE], "readwrite");
   transaction.objectStore(OBJECTS_STORE).put({ ...object, revision: undefined });
   transaction.objectStore(REVISIONS_STORE).put({ ...revision, key: revisionKey(id, 1) } satisfies StoredRevision<TPayload>);
-  await transactionDone(transaction); db.close(); return object;
+  await transactionDone(transaction); db.close(); void syncScientificObject(serializeScientificObject(object, [revision])).catch(() => undefined); return object;
 }
 
 export async function appendLocalObjectRevision<TPayload>(objectId: string, payload: TPayload, provenance: ScientificProvenance, artifacts?: ScientificArtifact[]): Promise<ScientificObjectRevision<TPayload>> {
   const db = await openDatabase(); const transaction = db.transaction([OBJECTS_STORE, REVISIONS_STORE], "readwrite"); const objectStore = transaction.objectStore(OBJECTS_STORE); const current = (await requestResult(objectStore.get(objectId))) as ScientificObject | undefined;
   if (!current) { transaction.abort(); db.close(); throw new Error("SCIENTIFIC_OBJECT_NOT_FOUND"); }
   const nextRevision = current.currentRevision + 1; const now = new Date().toISOString(); const revision: ScientificObjectRevision<TPayload> = { objectId, revision: nextRevision, payload, provenance, artifacts, contentHash: await hashPayload(payload), createdAt: now };
-  objectStore.put({ ...current, currentRevision: nextRevision, updatedAt: now }); transaction.objectStore(REVISIONS_STORE).put({ ...revision, key: revisionKey(objectId, nextRevision) } satisfies StoredRevision<TPayload>); await transactionDone(transaction); db.close(); return revision;
+  objectStore.put({ ...current, currentRevision: nextRevision, updatedAt: now }); transaction.objectStore(REVISIONS_STORE).put({ ...revision, key: revisionKey(objectId, nextRevision) } satisfies StoredRevision<TPayload>); await transactionDone(transaction); db.close(); void exportLocalScientificObject(objectId).then(syncScientificObject).catch(() => undefined); return revision;
 }
 
 export async function getLocalScientificObject<TPayload = unknown>(id: string): Promise<ScientificObject<TPayload> | undefined> {
@@ -99,5 +100,5 @@ export async function importLocalScientificObject<TPayload = unknown>(serialized
   const envelope = deserializeScientificObject<TPayload>(serialized); await verifyPayloadHashes(envelope.revisions); const db = await openDatabase(); const transaction = db.transaction([OBJECTS_STORE, REVISIONS_STORE], "readwrite"); const objects = transaction.objectStore(OBJECTS_STORE);
   if (await requestResult(objects.get(envelope.object.id))) { transaction.abort(); db.close(); throw new Error("SCIENTIFIC_OBJECT_ALREADY_EXISTS"); }
   objects.put(envelope.object); for (const revision of envelope.revisions) transaction.objectStore(REVISIONS_STORE).put({ ...revision, key: revisionKey(revision.objectId, revision.revision) } satisfies StoredRevision<TPayload>);
-  await transactionDone(transaction); db.close(); const current = envelope.revisions.find((revision) => revision.revision === envelope.object.currentRevision) ?? envelope.revisions.at(-1); return current ? { ...envelope.object, revision: current } : envelope.object;
+  await transactionDone(transaction); db.close(); const current = envelope.revisions.find((revision) => revision.revision === envelope.object.currentRevision) ?? envelope.revisions.at(-1); void syncScientificObject(serialized).catch(() => undefined); return current ? { ...envelope.object, revision: current } : envelope.object;
 }
