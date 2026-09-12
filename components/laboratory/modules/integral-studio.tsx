@@ -34,7 +34,6 @@ import {
     buildExactSolutionMarkdown,
     buildExactMethodMarkdown,
     buildNumericalPromptMarkdown, 
-    buildIntegralMarkdown, 
     buildIntegralLivePayload, 
     evaluateIntegralBenchmark,
 } from "./integral-studio/utils";
@@ -182,24 +181,9 @@ export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta 
         selectedLiveTargetId: liveBridge.selectedLiveTargetId,
         setExportState,
         setGuideMode,
-        buildMarkdown: () =>
-            buildIntegralMarkdown({
-                mode,
-                expression,
-                lower: Number(lower),
-                upper: Number(upper),
-                xMin: Number(xMin),
-                xMax: Number(xMax),
-                yMin: Number(yMin),
-                yMax: Number(yMax),
-                zMin: Number(zMin),
-                zMax: Number(zMax),
-                segmentsUsed: normalizedSegments,
-                xResolution: normalizedXResolution,
-                yResolution: normalizedYResolution,
-                zResolution: normalizedZResolution,
-                summary: summary as IntegralComputationSummary,
-            }),
+        // The bridge carries the canonical report packet. Summary/appendix
+        // profiles remain available for explicit copy/export actions.
+        buildMarkdown: () => reportSkeletonMarkdown,
         buildBlock: (targetId: string) =>
             buildIntegralLivePayload({
                 targetId,

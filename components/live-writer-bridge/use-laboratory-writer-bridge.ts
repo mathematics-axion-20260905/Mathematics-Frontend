@@ -74,8 +74,7 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
             return;
         }
 
-        const baseBlock = buildBlock(`${sourceLabel.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`);
-        const block = applyPublicationProfileToBlock(baseBlock, publicationProfile);
+        const block = buildBlock(`${sourceLabel.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`);
         const savedMeta = getSavedResultMeta?.();
         if (savedMeta?.id) {
             block.savedResultId = savedMeta.id;
@@ -102,7 +101,10 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
                             type: "laboratory-result",
                             title: block.title,
                             summary: block.summary,
-                            report_markdown: applyPublicationProfileToMarkdown(buildMarkdown(), block, publicationProfile),
+                            // Scientific Object transport must retain the full
+                            // computation/report payload. Publication profiles
+                            // are presentation choices for copy/export only.
+                            report_markdown: buildMarkdown(),
                             structured_payload: block,
                         },
                         metadata: draftMeta,
