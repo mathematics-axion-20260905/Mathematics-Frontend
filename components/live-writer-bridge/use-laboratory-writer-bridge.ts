@@ -9,9 +9,7 @@ import {
 
 import { type LiveWriterTargetOption } from "@/components/live-writer-bridge/use-live-writer-targets";
 import {
-    createLaboratoryWriterDraftHref,
     findLiveWriterTargetBySelection,
-    queueWriterImport,
     type WriterBridgeBlockData,
     type WriterBridgePublicationProfile,
 } from "@/lib/live-writer-bridge";
@@ -85,13 +83,17 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
         }
         const draftMeta = getDraftMeta?.(block);
 
-        const projectId = resolveActiveProjectId();
-        if (projectId) {
+        const activeProjectId = resolveActiveProjectId();
+        // A lab can be opened directly, without a selected Project. Keep the
+        // same Scientific Object transport in that case so cross-origin
+        // deployments never depend on another app's localStorage.
+        const transferProjectId = activeProjectId || "unassigned-transfer";
+        if (targetApp === "writer" || targetApp === "notebook") {
             let objectId = savedMeta?.scientificObjectId || null;
             try {
                 if (!objectId) {
                     const object = await createLocalScientificObject({
-                        projectId,
+                        projectId: transferProjectId,
                         kind: "calculation",
                         domain: `mathematics/${sourceLabel.toLowerCase().replace(/\s+/g, "-")}`,
                         title: block.title,
@@ -103,6 +105,7 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
                             report_markdown: applyPublicationProfileToMarkdown(buildMarkdown(), block, publicationProfile),
                             structured_payload: block,
                         },
+                        metadata: draftMeta,
                         provenance: {
                             sourceApp: "math",
                             engine: "Axion Mathematics Laboratory",
@@ -115,34 +118,17 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
                 const transfer = await publishScientificObjectTransfer(await exportLocalScientificObject(objectId));
                 setExportState("sent");
                 closeGuide();
-                window.location.assign(getEcosystemTransferHref(targetApp, transfer.transferId, projectId));
+                window.location.assign(getEcosystemTransferHref(targetApp, transfer.transferId, activeProjectId));
                 return;
             } catch (error) {
                 console.error("Scientific Object relay failed; falling back to same-origin object import", error);
-                if (!objectId) {
+                if (!activeProjectId || !objectId) {
                     return;
                 }
-                window.location.assign(getEcosystemObjectHref(targetApp, projectId, objectId));
+                window.location.assign(getEcosystemObjectHref(targetApp, activeProjectId, objectId));
                 return;
             }
         }
-
-        if (targetApp !== "writer") {
-            return;
-        }
-
-        const requestId = queueWriterImport({
-            version: 1,
-            markdown: applyPublicationProfileToMarkdown(buildMarkdown(), block, publicationProfile),
-            block,
-            title: draftMeta?.title ?? block.title,
-            abstract: draftMeta?.abstract,
-            keywords: draftMeta?.keywords,
-        });
-
-        setExportState("sent");
-        closeGuide();
-        window.location.assign(createLaboratoryWriterDraftHref(requestId));
     }, [buildBlock, buildMarkdown, closeGuide, getDraftMeta, getSavedResultMeta, publicationProfile, ready, setExportState, sourceLabel]);
 
     const sendToWriter = React.useCallback(() => sendToApp("writer"), [sendToApp]);

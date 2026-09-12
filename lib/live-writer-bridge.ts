@@ -213,7 +213,9 @@ export function findLiveWriterTargetBySelection<T extends { id: string; writerId
 }
 
 export function createLaboratoryWriterDraftHref(requestId: string) {
-    return `/write/new?source=laboratory&importId=${encodeURIComponent(requestId)}`;
+    const writerDraftBaseUrl = (process.env.NEXT_PUBLIC_WRITER_OBJECT_URL || "/write/new").replace(/\/$/, "");
+    const separator = writerDraftBaseUrl.includes("?") ? "&" : "?";
+    return `${writerDraftBaseUrl}${separator}source=laboratory&importId=${encodeURIComponent(requestId)}`;
 }
 
 function notifyLiveWriterSyncChanged() {
