@@ -10,6 +10,16 @@
   color: var(--ax-text);
 }
 
+.ax-landing-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 760px;
+}
+
+.ax-final-cta {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+
 .ax-landing-container {
   width: 100%;
   max-width: var(--ax-landing-max);
