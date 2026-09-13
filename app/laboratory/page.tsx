@@ -1,8 +1,15 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Activity, ArrowRight, AreaChart, Blocks, Sigma, TrendingUp } from "lucide-react";
 
 import { fetchLaboratoryModules } from "@/lib/laboratory";
 import { EcosystemTransferIntake } from "@/components/laboratory/ecosystem-transfer-intake";
+
+export const metadata: Metadata = {
+    title: "Mathematical studios",
+    description: "Explore focused studios for symbolic computation, visualization, calculus, matrices, probability and limits.",
+    alternates: { canonical: "/laboratory" },
+};
 
 const moduleIcons = {
     "integral-studio": Sigma,

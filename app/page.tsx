@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BookOpenText, ChartNoAxesCombined, FileDown, Sigma } from "lucide-react";
+import { ArrowRight, BookOpenText, FileDown, Sigma } from "lucide-react";
 
 import { AnimatedMathSurface } from "@/components/home/animated-math-surface";
 
@@ -15,14 +15,6 @@ const workflow = [
   ["03", "Solve", "Prefer exact forms, then use numerical methods to verify or extend them."],
   ["04", "Interpret", "Keep derivation, diagnostics and meaning beside the primary result."],
   ["05", "Save", "Preserve the scientific object so Notebook and Writer can continue the work."],
-];
-
-const studios = [
-  ["Integral Studio", "Symbolic, numerical and geometric integration."],
-  ["Differential Studio", "Derivatives, Jacobians, Hessians and differential systems."],
-  ["Matrix Studio", "Linear algebra, transformations and spectral structure."],
-  ["Probability Studio", "Distributions, inference and simulation."],
-  ["Series & Limit Studio", "Limits, sequences and convergence."],
 ];
 
 function SurfacePreview() {
@@ -48,16 +40,6 @@ function SurfacePreview() {
       <g fill="#5677a8" fontFamily="Georgia, serif" fontStyle="italic" opacity="0.6">
         <text x="490" y="80" fontSize="20">z = f(x,y)</text><text x="92" y="92" fontSize="18">∇²f</text><text x="575" y="356" fontSize="15">x</text>
       </g>
-    </svg>
-  );
-}
-
-function WavePlot() {
-  return (
-    <svg viewBox="0 0 620 220" className="h-full w-full" aria-hidden="true">
-      <g stroke="#dce4ed" strokeWidth="1"><path d="M24 110H596" /><path d="M310 20V200" /></g>
-      <path d="M25 110 C60 44 94 44 129 110 C164 176 198 176 234 110 C269 44 304 44 339 110 C374 176 409 176 444 110 C479 44 516 44 595 110" fill="none" stroke="#2867b4" strokeWidth="2.2" />
-      <path d="M25 110 C71 76 106 77 146 110 C187 143 220 143 261 110 C302 77 334 77 375 110 C416 143 451 143 492 110 C533 77 563 83 595 110" fill="none" stroke="#8fb1dc" strokeWidth="1.2" opacity="0.72" />
     </svg>
   );
 }
@@ -122,17 +104,6 @@ export default function HomePage() {
         <div className="ax-landing-container">
           <div className="ax-section-head"><div><p className="ax-landing-kicker">Workflow</p><h2 className="ax-section-title">One problem. Every useful layer.</h2></div><p className="ax-section-copy">The hierarchy is deliberate: problem first, visualization second, result third. Advanced detail appears only when it helps the work.</p></div>
           <div className="ax-editorial-list">{workflow.map(([index,title,copy])=><div key={index} className="ax-editorial-row"><div className="ax-editorial-index">{index}</div><div className="ax-editorial-title">{title}</div><p className="ax-editorial-copy">{copy}</p></div>)}</div>
-        </div>
-      </section>
-
-      <section id="capabilities" className="ax-landing-section">
-        <div className="ax-landing-container">
-          <div className="max-w-[820px]"><p className="ax-landing-kicker">Depth without noise</p><h2 className="ax-section-title">Serious mathematical work without an interface that fights you.</h2></div>
-          <div className="ax-deep-grid">
-            <article className="ax-deep-row"><div><p className="ax-figure-label">01 · Exact first</p><h3 className="ax-deep-title">Preserve the mathematics before approximating it.</h3><p className="ax-deep-copy">Symbolic structure, assumptions and derivation stay visible so numerical methods extend the result instead of replacing it.</p></div><div className="rounded-[18px] border border-[var(--ax-line)] bg-white p-8 text-center shadow-[var(--ax-shadow-subtle)]"><div className="font-serif text-[clamp(30px,4vw,58px)] tracking-[-.05em]">∫₀∞ x²e⁻ˣ dx = Γ(3) = 2</div><div className="mt-5 text-[11px] text-[var(--ax-text-faint)]">Exact form · assumptions retained</div></div></article>
-            <article className="ax-deep-row"><div><p className="ax-figure-label">02 · Visual by default</p><h3 className="ax-deep-title">The graph is part of the answer.</h3><p className="ax-deep-copy">Plots and surfaces are large enough to inspect. Visual output is not reduced to a thumbnail beneath the calculation.</p></div><div className="h-[260px] rounded-[18px] border border-[var(--ax-line)] bg-white p-6 shadow-[var(--ax-shadow-subtle)]"><WavePlot /></div></article>
-            <article className="ax-deep-row"><div><p className="ax-figure-label">03 · Focused studios</p><h3 className="ax-deep-title">Choose the mathematical instrument, not a generic dashboard.</h3><p className="ax-deep-copy">Each studio keeps the same hierarchy while exposing domain-specific controls only where they matter.</p></div><div className="divide-y divide-[var(--ax-line)] border-y border-[var(--ax-line)]">{studios.map(([title,copy],index)=><Link key={title} href="/laboratory" className="group grid grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-4 py-4"><span className="font-serif text-[15px] text-[var(--ax-text-faint)]">0{index+1}</span><span><span className="block text-[13px] font-semibold">{title}</span><span className="mt-1 block text-[11px] leading-5 text-[var(--ax-text-soft)]">{copy}</span></span><ArrowRight className="h-4 w-4 text-[var(--ax-text-faint)] transition-transform group-hover:translate-x-1" /></Link>)}</div></article>
-          </div>
         </div>
       </section>
 

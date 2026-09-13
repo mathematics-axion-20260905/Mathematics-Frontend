@@ -9,6 +9,7 @@ import "@/styles/axion-premium-workspace.css";
 import { EcosystemBar } from "@/components/ecosystem/ecosystem-bar";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import { siteJsonLd, siteMetadata } from "@/lib/seo";
 
 const manrope = Manrope({
     subsets: ["latin"],
@@ -22,10 +23,7 @@ const playfair = Playfair_Display({
     display: "swap",
 });
 
-export const metadata: Metadata = {
-    title: "MathSphere Laboratory | Axion Science",
-    description: "Scientific computation, symbolic analysis and interactive mathematical visualization workspace.",
-};
+export const metadata: Metadata = siteMetadata;
 
 export const viewport: Viewport = {
     width: "device-width",
@@ -41,6 +39,9 @@ export default function MainLayout({
 }>) {
     return (
         <html lang="uz">
+            <head>
+                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }} />
+            </head>
             <body className={`${manrope.variable} ${playfair.variable} min-h-screen`}>
                 <div className="flex min-h-screen flex-col">
                     <EcosystemBar currentApp="math" />

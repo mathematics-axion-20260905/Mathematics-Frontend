@@ -1,14 +1,23 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { LaboratoryWorkspaceShell } from "@/components/laboratory/workspace-shell";
 import { fetchLaboratoryModule } from "@/lib/laboratory";
 
-export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const params = await props.params;
     const labModule = await fetchLaboratoryModule(params.slug);
 
     return {
-        title: labModule ? `${labModule.title} - MathSphere Laboratory` : "Laboratory Module - MathSphere",
+        title: labModule ? labModule.title : "Laboratory module",
+        description: labModule?.description || labModule?.summary || "A focused mathematical computation workspace.",
+        alternates: { canonical: `/laboratory/${params.slug}` },
+        openGraph: labModule ? {
+            type: "article",
+            title: labModule.title,
+            description: labModule.description || labModule.summary,
+            url: `/laboratory/${params.slug}`,
+        } : undefined,
     };
 }
 
