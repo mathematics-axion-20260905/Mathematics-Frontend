@@ -3,6 +3,12 @@ import { useLocale } from "@/components/locale-provider";
 import { LaboratoryFormattingService } from "./services/formatting-service";
 
 const UZ_LABELS: Record<string, string> = {
+    Solve: "Yechish",
+    Validation: "Validatsiya",
+    Visuals: "Vizualizatsiya",
+    Export: "Eksport",
+    Research: "Tadqiqot",
+    Bridge: "Ko‘prik",
     Result: "Natija",
     "Primary result": "Asosiy natija",
     Confidence: "Ishonchlilik",
@@ -27,6 +33,10 @@ const UZ_LABELS: Record<string, string> = {
     "High trust": "Yuqori ishonch",
     "Medium trust": "O‘rtacha ishonch",
     Cautious: "Ehtiyotkorlik kerak",
+    Ready: "Tayyor",
+    Waiting: "Kutilmoqda",
+    Blocked: "Bloklangan",
+    Clean: "Muammo yo‘q",
     "Live preview": "Jonli ko‘rish",
     Pending: "Kutilmoqda",
     "not saved": "saqlanmagan",

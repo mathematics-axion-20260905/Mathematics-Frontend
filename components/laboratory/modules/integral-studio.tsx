@@ -13,6 +13,7 @@ import { useLaboratoryWriterBridge } from "@/components/live-writer-bridge/use-l
 import { useLaboratoryResultPersistence } from "@/components/laboratory/use-laboratory-result-persistence";
 import type { WriterBridgePublicationProfile } from "@/lib/live-writer-bridge";
 import { verifyIntegralCertificate, type VerificationCertificate } from "@/lib/laboratory-verification";
+import { useLocale } from "@/components/locale-provider";
 
 // Shared Services
 import { LaboratoryFormattingService } from "@/components/laboratory/services/formatting-service";
@@ -56,6 +57,8 @@ type StudioCardTone = "neutral" | "info" | "success" | "warn";
 type StudioCard = { eyebrow: string; value: string; detail: string; tone: StudioCardTone };
 
 export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta }) {
+    const { locale } = useLocale();
+    const isUz = locale === "uz";
     const { state, actions } = useIntegralStudio(module);
     const {
         mode,
@@ -213,16 +216,16 @@ export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta 
 
     const solverStatusText =
         solvePhase === "analytic-loading"
-            ? "Analitik solve tekshirilmoqda"
+            ? (isUz ? "Analitik yechim tekshirilmoqda" : "Checking analytical solution")
             : solvePhase === "exact-ready"
-              ? "Analitik yechim tayyor"
+              ? (isUz ? "Analitik yechim tayyor" : "Analytical solution ready")
               : solvePhase === "needs-numerical"
-                ? "Numerik tasdiq kutilmoqda"
+                ? (isUz ? "Sonli hisoblashni tasdiqlash kutilmoqda" : "Awaiting numerical confirmation")
                 : summary
-                  ? "Numerik estimate tayyor"
+                  ? (isUz ? "Sonli baho tayyor" : "Numerical estimate ready")
                   : solvePhase === "error"
-                    ? "Solver warning"
-                    : "Solve kutilmoqda";
+                    ? (isUz ? "Yechuvchi ogohlantirishi" : "Solver warning")
+                    : (isUz ? "Yechish kutilmoqda" : "Awaiting solve");
 
     const taxonomyLaneGuidance = React.useMemo(() => {
         if (classification.kind === "line_integral_candidate") {
@@ -278,73 +281,73 @@ export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta 
         if (analyticSolution?.status === "exact") {
             return {
                 source: "exact",
-                sourceLabel: "Exact Result",
+                sourceLabel: isUz ? "Aniq natija" : "Exact result",
                 sourceClassName: "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
                 headline: analyticSolution.exact.numeric_approximation || analyticSolution.exact.evaluated_latex || "Exact result",
-                subline: analyticSolution.exact.method_label || "Symbolic Reduction",
+                subline: analyticSolution.exact.method_label || (isUz ? "Ramziy soddalashtirish" : "Symbolic reduction"),
                 latex: analyticSolution.exact.evaluated_latex ? `$$${analyticSolution.exact.evaluated_latex}$$` : null,
-                confidenceLabel: "High trust",
-                confidenceDetail: "Symbolic solver closed-form natijani topdi.",
+                confidenceLabel: isUz ? "Yuqori ishonch" : "High confidence",
+                confidenceDetail: isUz ? "Ramziy yechuvchi yopiq shakldagi natijani qaytardi." : "The symbolic solver returned a closed-form result.",
                 confidenceClassName: "text-emerald-700 dark:text-emerald-300",
-                nextAction: warningCount > 0 ? "Compare tabida signal va sweep'ni ko'rib chiqing." : "Xohlasangiz numerik compare yoki report export qiling.",
+                nextAction: warningCount > 0 ? (isUz ? "Taqqoslash bo‘limida signallar va sezgirlik tahlilini ko‘rib chiqing." : "Review signals and the sensitivity analysis in Compare.") : (isUz ? "Natijani Writer yoki Notebook’ga yuboring." : "Send the result to Writer or Notebook when ready."),
             };
         }
         if (summary && mode === "single") {
             const relativeSpread = singleDiagnostics?.relativeSpread || 0;
             return {
                 source: "numerical",
-                sourceLabel: "Numerical Result",
+                sourceLabel: isUz ? "Sonli natija" : "Numerical result",
                 sourceClassName: "border-sky-500/20 bg-sky-500/10 text-sky-700 dark:text-sky-300",
                 headline: LaboratoryFormattingService.formatMetric((summary as SingleIntegralSummary).simpson, 6),
-                subline: "Simpson estimate",
+                subline: isUz ? "Simpson bahosi" : "Simpson estimate",
                 latex: null,
-                confidenceLabel: relativeSpread < 0.02 ? "High trust" : relativeSpread < 0.06 ? "Medium trust" : "Cautious",
-                confidenceDetail: relativeSpread < 0.02 ? "Metodlar orasidagi farq juda kichik." : relativeSpread < 0.06 ? "Estimate ishlatish mumkin, lekin compare foydali." : "Method spread sezilarli, segmentni oshirish kerak.",
+                confidenceLabel: relativeSpread < 0.02 ? (isUz ? "Yuqori ishonch" : "High confidence") : relativeSpread < 0.06 ? (isUz ? "O‘rtacha ishonch" : "Moderate confidence") : (isUz ? "Tekshiruv zarur" : "Review required"),
+                confidenceDetail: relativeSpread < 0.02 ? (isUz ? "Usullar orasidagi farq juda kichik." : "The numerical methods agree closely.") : relativeSpread < 0.06 ? (isUz ? "Baho ishlatilishi mumkin, ammo taqqoslash foydali." : "The estimate is usable; comparison is recommended.") : (isUz ? "Usullar orasidagi farq sezilarli; segmentlar sonini oshiring." : "Method spread is material; increase the number of segments."),
                 confidenceClassName: relativeSpread < 0.02 ? "text-emerald-700 dark:text-emerald-300" : relativeSpread < 0.06 ? "text-amber-700 dark:text-amber-300" : "text-rose-700 dark:text-rose-300",
-                nextAction: warningCount > 0 ? "Sweep va compare section orqali barqarorlikni tekshiring." : "Natijani writer yoki note oqimiga olib o'tish mumkin.",
+                nextAction: warningCount > 0 ? (isUz ? "Sezgirlik tahlili va taqqoslash orqali barqarorlikni tekshiring." : "Review stability through the sensitivity and comparison views.") : (isUz ? "Natijani Writer yoki Notebook’ga yuborish mumkin." : "The result can be sent to Writer or Notebook."),
             };
         }
         if (summary && mode === "double") {
             return {
                 source: "numerical",
-                sourceLabel: "Surface Estimate",
+                sourceLabel: isUz ? "Sirt bahosi" : "Surface estimate",
                 sourceClassName: "border-sky-500/20 bg-sky-500/10 text-sky-700 dark:text-sky-300",
                 headline: LaboratoryFormattingService.formatMetric((summary as DoubleIntegralSummary).value, 6),
-                subline: `${normalizedXResolution} x ${normalizedYResolution} grid`,
+                subline: isUz ? `${normalizedXResolution} × ${normalizedYResolution} hisoblash to‘ri` : `${normalizedXResolution} × ${normalizedYResolution} grid`,
                 latex: null,
-                confidenceLabel: warningCount > 1 ? "Medium trust" : "Stable grid",
-                confidenceDetail: warningCount > 1 ? "Grid va domain signallarini qayta ko'rish tavsiya etiladi." : "Surface grid bo'yicha estimate tayyor.",
+                confidenceLabel: warningCount > 1 ? (isUz ? "O‘rtacha ishonch" : "Moderate confidence") : (isUz ? "Barqaror to‘r" : "Stable grid"),
+                confidenceDetail: warningCount > 1 ? (isUz ? "To‘r va soha signallarini qayta ko‘rib chiqing." : "Review the grid and domain signals.") : (isUz ? "Sirt to‘ri bo‘yicha baho tayyor." : "The surface-grid estimate is ready."),
                 confidenceClassName: warningCount > 1 ? "text-amber-700 dark:text-amber-300" : "text-emerald-700 dark:text-emerald-300",
-                nextAction: "Visualizer va tables section orqali peak hamda profile'larni tekshiring.",
+                nextAction: isUz ? "Vizualizatsiya va jadvallar bo‘limida maksimum hamda profillarni tekshiring." : "Review peaks and profiles in the visualization and tables views.",
             };
         }
         if (summary && mode === "triple") {
             return {
                 source: "numerical",
-                sourceLabel: "Volume Estimate",
+                sourceLabel: isUz ? "Hajmiy baho" : "Volume estimate",
                 sourceClassName: "border-sky-500/20 bg-sky-500/10 text-sky-700 dark:text-sky-300",
                 headline: LaboratoryFormattingService.formatMetric((summary as TripleIntegralSummary).value, 6),
-                subline: `${normalizedXResolution} x ${normalizedYResolution} x ${normalizedZResolution} grid`,
+                subline: isUz ? `${normalizedXResolution} × ${normalizedYResolution} × ${normalizedZResolution} hisoblash to‘ri` : `${normalizedXResolution} × ${normalizedYResolution} × ${normalizedZResolution} grid`,
                 latex: null,
-                confidenceLabel: warningCount > 1 ? "Medium trust" : "Research preview",
-                confidenceDetail: warningCount > 1 ? "Volumetric grid'ni kuchaytirib qayta tekshirish kerak." : "Hozirgi voxel grid bo'yicha estimate tayyor.",
+                confidenceLabel: warningCount > 1 ? (isUz ? "O‘rtacha ishonch" : "Moderate confidence") : (isUz ? "Tadqiqot ko‘rigi" : "Research preview"),
+                confidenceDetail: warningCount > 1 ? (isUz ? "Hajmiy to‘rni zichlashtirib, qayta tekshiring." : "Increase the volumetric-grid resolution and verify again.") : (isUz ? "Joriy voksel to‘ri bo‘yicha baho tayyor." : "The estimate is ready for the current voxel grid."),
                 confidenceClassName: warningCount > 1 ? "text-amber-700 dark:text-amber-300" : "text-emerald-700 dark:text-emerald-300",
-                nextAction: "Density profile va report skeleton bilan natijani hujjatlashtiring.",
+                nextAction: isUz ? "Zichlik profilini ko‘rib, natijani hisobot tuzilmasida hujjatlashtiring." : "Review the density profile and document the result in the report structure.",
             };
         }
         return {
             source: "idle",
             sourceLabel: "Awaiting Solve",
             sourceClassName: "border-border/60 bg-background/70 text-muted-foreground",
-            headline: "Natija hali yo'q",
+            headline: isUz ? "Natija hali mavjud emas" : "No result yet",
             subline: solverStatusText,
             latex: null,
-            confidenceLabel: "No confidence yet",
-            confidenceDetail: "Formula va domain tayyor bo'lgach solve ishga tushadi.",
+            confidenceLabel: isUz ? "Ishonchlilik hali baholanmagan" : "Confidence not yet assessed",
+            confidenceDetail: isUz ? "Formula va soha tayyor bo‘lgach yechish ishga tushadi." : "Solve will run once the formula and domain are ready.",
             confidenceClassName: "text-muted-foreground",
-            nextAction: "Masalani tekshirib, analytic solve yoki numerik tayyorlashni bosing.",
+            nextAction: isUz ? "Masalani tekshiring va analitik yoki sonli yechishni ishga tushiring." : "Review the problem and run an analytical or numerical solve.",
         };
-    }, [analyticSolution, mode, normalizedXResolution, normalizedYResolution, normalizedZResolution, singleDiagnostics, solvePhase, solverStatusText, summary, warningSignals.length]);
+    }, [analyticSolution, isUz, mode, normalizedXResolution, normalizedYResolution, normalizedZResolution, singleDiagnostics, solvePhase, solverStatusText, summary, warningSignals.length]);
 
     const workflowReadinessCards = React.useMemo<StudioCard[]>(() => ([
         { eyebrow: "Solve", value: solverStatusText, detail: analyticSolution?.status === "exact" ? "Exact solver javob berdi." : summary ? "Numerik result tayyor." : "Solve hali kutilyapti.", tone: analyticSolution?.status === "exact" || summary ? "success" : solvePhase === "error" ? "warn" : "info" },
@@ -358,7 +361,7 @@ export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta 
         const cards: StudioCard[] = [
             { eyebrow: "Result", value: primaryValue, detail: resultConsoleData.subline, tone: resultConsoleData.source === "idle" ? "neutral" : resultConsoleData.source === "exact" ? "success" : "info" },
             { eyebrow: "Source", value: resultConsoleData.sourceLabel, detail: resultConsoleData.nextAction, tone: resultConsoleData.source === "exact" ? "success" : resultConsoleData.source === "numerical" ? "info" : "neutral" },
-            { eyebrow: "Confidence", value: resultConsoleData.confidenceLabel, detail: resultConsoleData.confidenceDetail, tone: resultConsoleData.confidenceLabel === "High trust" || resultConsoleData.confidenceLabel === "Stable grid" ? "success" : resultConsoleData.confidenceLabel === "No confidence yet" ? "neutral" : "warn" },
+            { eyebrow: "Confidence", value: resultConsoleData.confidenceLabel, detail: resultConsoleData.confidenceDetail, tone: resultConsoleData.confidenceLabel === "High trust" || resultConsoleData.confidenceLabel === "High confidence" || resultConsoleData.confidenceLabel === "Yuqori ishonch" || resultConsoleData.confidenceLabel === "Stable grid" || resultConsoleData.confidenceLabel === "Barqaror to‘r" ? "success" : resultConsoleData.confidenceLabel === "No confidence yet" || resultConsoleData.confidenceLabel === "Confidence not yet assessed" || resultConsoleData.confidenceLabel === "Ishonchlilik hali baholanmagan" ? "neutral" : "warn" },
         ];
 
         if (mode === "single" && summary) {
@@ -509,7 +512,7 @@ export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta 
     const staleOverlay = isResultStale ? (
         <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[inherit] bg-background/55 backdrop-blur-[2px]">
             <div className="rounded-2xl border border-accent/30 bg-background/90 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-accent shadow-lg">
-                Natija kutilmoqda
+                {isUz ? "Natija kutilmoqda" : "Waiting for result"}
             </div>
         </div>
     ) : null;
