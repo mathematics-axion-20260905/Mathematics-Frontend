@@ -7,9 +7,9 @@ import { AnimatedMathSurface } from "@/components/home/animated-math-surface";
 import { useLocale } from "@/components/locale-provider";
 
 const defaultPromises = [
-  ["Solve", "Exact symbolic work, numerical methods and transparent assumptions."],
-  ["Visualize", "Large 2D, 3D and animated scientific output as a primary result."],
-  ["Preserve", "Keep the result structured, reproducible and ready for the Project."],
+  ["Solve", "Use exact symbolic methods, numerical checks and explicit assumptions."],
+  ["Visualize", "Inspect 2D, 3D and animated scientific output as part of the result."],
+  ["Preserve", "Keep the result structured, reproducible and available to the Project."],
 ];
 
 const defaultWorkflow = [
@@ -22,18 +22,18 @@ const defaultWorkflow = [
 
 const mathLandingCopy = {
   en: {
-    kicker: "MathSphere Laboratory · scientific computation", title: ["Mathematics,", "made", "visible."], lead: "Solve, explore and understand mathematics through exact computation, clear visualization and living scientific scenes.", open: "Open Laboratory", explore: "Explore the product",
-    productKicker: "The product", productTitle: "A laboratory built around the mathematical result.", productCopy: "The interface stays quiet until the mathematics needs depth. Enter the problem once, then move naturally from exact form to numerical verification, geometry, interpretation and export.",
-    workflowKicker: "Workflow", workflowTitle: "One problem. Every useful layer.", workflowCopy: "The hierarchy is deliberate: problem first, visualization second, result third. Advanced detail appears only when it helps the work.",
-    ecosystemKicker: "One research trail", ecosystemTitle: "The result should survive the handoff.", ecosystemCopy: "Math is one instrument in the larger Project. Save a result once, reason about it in Notebook, then use the same scientific object in Writer.",
-    finalTitle: ["Mathematics should be something you can", "see."], finalCopy: "Open a focused laboratory and move from problem to exact result, visualization and reusable scientific output.",
+    kicker: "MathSphere Laboratory · scientific computation", title: ["Scientific computation", "with inspectable", "results."], lead: "Solve mathematical problems, compare exact and numerical methods, and preserve complete results for downstream research.", open: "Open Laboratory", explore: "Product overview",
+    productKicker: "Product overview", productTitle: "A mathematical workspace organized around the result.", productCopy: "Enter a problem once, then move from exact form to numerical verification, geometry, interpretation and export. Each stage exposes the information needed to assess the result.",
+    workflowKicker: "Working method", workflowTitle: "A clear path from problem to reusable result.", workflowCopy: "The workflow keeps the problem, method and evidence together. Advanced analysis remains available without competing with the primary result.",
+    ecosystemKicker: "Research continuity", ecosystemTitle: "Results remain usable after computation.", ecosystemCopy: "Math is one instrument in the Project. Save a result once, examine it in Notebook, and use the same Scientific Object in Writer without recreating the calculation.",
+    finalTitle: ["A mathematical result should remain", "verifiable."], finalCopy: "Use a focused laboratory for exact computation, numerical checks, visualization and structured scientific output.",
   },
   uz: {
-    kicker: "MathSphere laboratoriyasi · ilmiy hisoblash", title: ["Matematika,", "ko‘zga", "ko‘rinsin."], lead: "Matematikani aniq hisoblash, tushunarli vizualizatsiya va jonli ilmiy sahnalar orqali yeching, o‘rganing va anglang.", open: "Laboratoriyani ochish", explore: "Mahsulotni ko‘rish",
-    productKicker: "Mahsulot", productTitle: "Matematik natija atrofida qurilgan laboratoriya.", productCopy: "Interfeys matematika chuqurlik talab qilmaguncha sokin qoladi. Masalani bir marta kiriting, so‘ng aniq shakldan sonli tekshiruv, geometriya, talqin va eksportga o‘ting.",
-    workflowKicker: "Jarayon", workflowTitle: "Bitta masala. Kerakli barcha qatlamlar.", workflowCopy: "Ierarxiya ataylab shunday: avval masala, keyin vizualizatsiya, undan so‘ng natija. Murakkab tafsilot faqat ishga yordam berganda ko‘rinadi.",
-    ecosystemKicker: "Bitta tadqiqot izi", ecosystemTitle: "Natija keyingi uzatishda saqlanib qolsin.", ecosystemCopy: "Math katta Loyihadagi bitta asbob. Natijani bir marta saqlang, Notebookda fikrlang, keyin o‘sha Scientific Objectdan Writerda foydalaning.",
-    finalTitle: ["Matematika", "ko‘rinadigan"], finalCopy: "Masaladan aniq natija, vizualizatsiya va qayta ishlatiladigan ilmiy chiqishgacha o‘tadigan fokuslangan laboratoriyani oching.",
+    kicker: "MathSphere laboratoriyasi · ilmiy hisoblash", title: ["Tekshiriladigan", "natijalarga ega", "ilmiy hisoblash."], lead: "Matematik masalalarni yeching, aniq va sonli usullarni taqqoslang hamda to‘liq natijani keyingi tadqiqotlar uchun saqlang.", open: "Laboratoriyani ochish", explore: "Mahsulot haqida",
+    productKicker: "Mahsulot haqida", productTitle: "Natija markazida tashkil etilgan matematik ish maydoni.", productCopy: "Masalani bir marta kiriting, so‘ng aniq shakl, sonli tekshiruv, geometriya, talqin va eksport bosqichlaridan o‘ting. Har bir bosqich natijani baholash uchun zarur ma’lumotni ko‘rsatadi.",
+    workflowKicker: "Ishlash usuli", workflowTitle: "Masaladan qayta ishlatiladigan natijagacha aniq yo‘l.", workflowCopy: "Jarayon masala, usul va dalilni birga saqlaydi. Kengaytirilgan tahlil asosiy natijaga xalaqit bermagan holda mavjud bo‘ladi.",
+    ecosystemKicker: "Tadqiqot uzluksizligi", ecosystemTitle: "Natija hisoblashdan keyin ham ishlatiladi.", ecosystemCopy: "Math Loyihadagi bitta asbobdir. Natijani bir marta saqlang, Notebookda tahlil qiling va o‘sha Scientific Objectdan hisoblashni qayta bajarmasdan Writerda foydalaning.",
+    finalTitle: ["Matematik natija", "tekshiriladigan"], finalCopy: "Aniq hisoblash, sonli tekshiruv, vizualizatsiya va tuzilmali ilmiy chiqish uchun fokuslangan laboratoriyadan foydalaning.",
   },
 } as const;
 
@@ -67,7 +67,10 @@ function SurfacePreview() {
 export default function HomePage() {
   const { locale } = useLocale();
   const copy = mathLandingCopy[locale];
-  const promises = locale === "uz" ? [["Yeching", "Aniq ramziy hisoblash, sonli usullar va ochiq farazlardan foydalaning."], ["Ko‘rsating", "Katta 2D, 3D va animatsion ilmiy natijalarni asosiy natija sifatida ko‘ring."], ["Saqlang", "Natijani tuzilmali, takrorlanuvchi va Loyiha uchun tayyor holda saqlang."]] : defaultPromises;
+  const preview = locale === "uz"
+    ? { figure: "01-rasm · Integral studiyasi", compute: "Mahalliy hisoblash", problem: "Masala", items: ["Masala", "Vizualizatsiya", "Natija", "Talqin", "Kengaytirilgan tahlil"], footer: ["Avval aniq shakl", "Sonli tekshiruv", "Tuzilmali chiqish"], visual: "Asosiy vizualizatsiya", surface: "Sirt talqini", interactive: "Interaktiv", exact: "Aniq natija", exactCopy: "Ramziy shakl asosiy bo‘lib qoladi; sonli hisoblash tekshiruv qatlami sifatida ishlaydi.", interpretation: "Talqin", interpretationCopy: "Integral gamma funksiyasiga bevosita mos keladi. Farazlar, usul va natija keyingi foydalanish uchun mavjud.", saved: "Loyihaga saqlandi" }
+    : { figure: "Fig 01 · Integral Studio", compute: "Local compute", problem: "Problem", items: ["Problem", "Visualization", "Result", "Interpretation", "Advanced analysis"], footer: ["Exact first", "Numeric verification", "Structured output"], visual: "Primary visualization", surface: "Surface interpretation", interactive: "Interactive", exact: "Exact result", exactCopy: "The symbolic form stays primary; numerical evaluation remains a verification layer.", interpretation: "Interpretation", interpretationCopy: "The integral maps directly to the gamma function. Assumptions, method and result remain available for later use.", saved: "Saved to Project" };
+  const promises = locale === "uz" ? [["Yeching", "Aniq ramziy usullar, sonli tekshiruvlar va ochiq farazlardan foydalaning."], ["Vizuallashtiring", "2D, 3D va animatsion ilmiy chiqishni natijaning bir qismi sifatida tekshiring."], ["Saqlang", "Natijani tuzilmali, qayta ishlab bo‘ladigan va Loyiha uchun mavjud holatda saqlang."]] : defaultPromises;
   const workflow = locale === "uz" ? [["01", "Masala", "Matematik savolni farazlar va chegaralar bilan bir marta kiriting."], ["02", "Ko‘rsating", "Natijani songa yoki ifodaga qisqartirishdan oldin geometriyani ko‘rinadigan qiling."], ["03", "Yeching", "Avval aniq shaklni oling, keyin uni tekshirish yoki kengaytirish uchun sonli usullardan foydalaning."], ["04", "Talqin qiling", "Keltirib chiqarish, diagnostika va ma’noni asosiy natija yonida saqlang."], ["05", "Saqlang", "Ilmiy obyektni Notebook va Writer davom ettira oladigan qilib saqlang."]] : defaultWorkflow;
   return (
     <div className="ax-landing">
@@ -101,22 +104,22 @@ export default function HomePage() {
           </div>
 
           <div className="ax-product-frame">
-            <div className="flex h-11 items-center justify-between border-b border-[var(--ax-line)] px-5"><span className="ax-figure-label">Fig 01 · Integral Studio</span><span className="text-[10px] font-semibold text-[var(--ax-accent)]">Local compute</span></div>
+            <div className="flex h-11 items-center justify-between border-b border-[var(--ax-line)] px-5"><span className="ax-figure-label">{preview.figure}</span><span className="text-[10px] font-semibold text-[var(--ax-accent)]">{preview.compute}</span></div>
             <div className="grid min-h-[560px] lg:grid-cols-[220px_minmax(0,1fr)]">
               <aside className="border-b border-[var(--ax-line)] bg-[var(--ax-surface-soft)] p-5 lg:border-b-0 lg:border-r lg:p-6">
-                <div className="ax-figure-label">Problem</div>
+                <div className="ax-figure-label">{preview.problem}</div>
                 <div className="mt-4 rounded-[10px] border border-[var(--ax-line)] bg-white p-4 font-serif text-[21px]">∫₀∞ x²e⁻ˣ dx</div>
-                <div className="mt-8 space-y-1.5 text-[11px] font-semibold text-[var(--ax-text-soft)]">{['Problem','Visualization','Result','Interpretation','Advanced'].map((item,index)=><div key={item} className={`rounded-[7px] px-3 py-2.5 ${index===2?'bg-white text-[var(--ax-text)] shadow-[var(--ax-shadow-subtle)]':''}`}>{item}</div>)}</div>
-                <div className="mt-9 border-t border-[var(--ax-line)] pt-5 text-[10px] leading-5 text-[var(--ax-text-faint)]">Exact first<br />Numeric verification<br />Structured output</div>
+                <div className="mt-8 space-y-1.5 text-[11px] font-semibold text-[var(--ax-text-soft)]">{preview.items.map((item,index)=><div key={item} className={`rounded-[7px] px-3 py-2.5 ${index===2?'bg-white text-[var(--ax-text)] shadow-[var(--ax-shadow-subtle)]':''}`}>{item}</div>)}</div>
+                <div className="mt-9 border-t border-[var(--ax-line)] pt-5 text-[10px] leading-5 text-[var(--ax-text-faint)]">{preview.footer.map((item) => <span key={item} className="block">{item}</span>)}</div>
               </aside>
               <div className="grid min-w-0 xl:grid-cols-[1.18fr_.82fr]">
                 <div className="min-h-[410px] border-b border-[var(--ax-line)] p-6 sm:p-8 xl:border-b-0 xl:border-r">
-                  <div className="flex items-center justify-between"><div><div className="ax-figure-label">Primary visualization</div><div className="mt-1 text-sm font-semibold">Surface interpretation</div></div><span className="text-[10px] font-semibold text-[var(--ax-accent)]">Interactive</span></div>
+                  <div className="flex items-center justify-between"><div><div className="ax-figure-label">{preview.visual}</div><div className="mt-1 text-sm font-semibold">{preview.surface}</div></div><span className="text-[10px] font-semibold text-[var(--ax-accent)]">{preview.interactive}</span></div>
                   <div className="mt-4 h-[390px]"><SurfacePreview /></div>
                 </div>
                 <div className="grid content-start gap-0">
-                  <div className="border-b border-[var(--ax-line)] p-6 sm:p-8"><div className="ax-figure-label">Exact result</div><div className="mt-5 font-serif text-[34px] tracking-[-.04em]">Γ(3) = 2</div><p className="mt-3 text-[12px] leading-6 text-[var(--ax-text-soft)]">The symbolic form stays primary; numerical evaluation remains a verification layer.</p></div>
-                  <div className="p-6 sm:p-8"><div className="ax-figure-label">Interpretation</div><p className="mt-4 text-[13px] leading-7 text-[var(--ax-text-soft)]">The integral maps directly to the gamma function. Assumptions, method and result remain available for later use.</p><div className="mt-6 flex flex-wrap gap-2 text-[10px]"><span className="rounded-full bg-[var(--ax-accent-soft)] px-3 py-1.5 font-semibold text-[var(--ax-accent)]">Exact</span><span className="rounded-full bg-[var(--ax-surface-soft)] px-3 py-1.5 font-semibold">Saved to Project</span></div></div>
+                  <div className="border-b border-[var(--ax-line)] p-6 sm:p-8"><div className="ax-figure-label">{preview.exact}</div><div className="mt-5 font-serif text-[34px] tracking-[-.04em]">Γ(3) = 2</div><p className="mt-3 text-[12px] leading-6 text-[var(--ax-text-soft)]">{preview.exactCopy}</p></div>
+                  <div className="p-6 sm:p-8"><div className="ax-figure-label">{preview.interpretation}</div><p className="mt-4 text-[13px] leading-7 text-[var(--ax-text-soft)]">{preview.interpretationCopy}</p><div className="mt-6 flex flex-wrap gap-2 text-[10px]"><span className="rounded-full bg-[var(--ax-accent-soft)] px-3 py-1.5 font-semibold text-[var(--ax-accent)]">{locale === "uz" ? "Aniq" : "Exact"}</span><span className="rounded-full bg-[var(--ax-surface-soft)] px-3 py-1.5 font-semibold">{preview.saved}</span></div></div>
                 </div>
               </div>
             </div>

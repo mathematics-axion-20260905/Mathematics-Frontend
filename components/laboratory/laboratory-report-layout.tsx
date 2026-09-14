@@ -10,6 +10,7 @@ import {
     LAB_PUBLICATION_PROFILE_LABELS,
 } from "@/lib/laboratory-publication-profile";
 import type { WriterBridgePublicationProfile } from "@/lib/live-writer-bridge";
+import { useLocale } from "@/components/locale-provider";
 
 type ReportMetricCard = React.ComponentProps<typeof LaboratoryMetricCard>;
 
@@ -195,6 +196,10 @@ export function LaboratoryReportLayout({
     reportFormat?: ReportGeneratorFormat;
     setReportFormat?: (format: ReportGeneratorFormat) => void;
 }) {
+    const { locale } = useLocale();
+    const copy = locale === "uz"
+        ? { center: "Hisobot markazi", pro: "Professional chiqish", reportVerification: "hisobot + tekshiruv", on: "yoqilgan", off: "o‘chirilgan", scientific: "Ilmiy ohang", student: "Talaba ohangi", teacher: "O‘qituvchi ohangi", lab: "Laboratoriya ohangi", reverse: "Bo‘limlar tartibini teskari qilish", graph: "Grafik", certificate: "Sertifikat", codeAppendix: "Kod ilovasi", saveSnapshot: "Hisobot nusxasini saqlash", reportBuilder: "Hisobot yaratgich", saving: "Saqlanmoqda…", saved: "Laboratoriyaga saqlandi", saveResult: "Natijani saqlash", copyReport: "Hisobotni nusxalash", exportPdf: "PDF eksporti", exportLatex: "LaTeX eksporti", exportDocx: "DOCX eksporti", sendWriter: "Writerga yuborish", sendNotebook: "Notebookka yuborish", profile: "Faol nashr profili", asset: "Saqlangan obyekt", exportPacket: "Eksport to‘plami", exportPreview: "Eksport ko‘rinishi", template: "Shablon", brand: "Brend", sections: "Bo‘limlar", attachments: "Ilovalar", readiness: "Hisobot tayyorligi", history: "Hisobot tarixi", chars: "belgi", noSnapshots: "Hozircha mahalliy hisobot nusxalari yo‘q.", bridge: "Bridge", pushLive: "Jonli natijani yuborish", noWriter: "Writer hujjati topilmadi" }
+        : { center: "Report Center", pro: "Pro output", reportVerification: "report + verification", on: "on", off: "off", scientific: "Scientific tone", student: "Student tone", teacher: "Teacher tone", lab: "Lab tone", reverse: "Reverse section order", graph: "Graph", certificate: "Certificate", codeAppendix: "Code appendix", saveSnapshot: "Save report snapshot", reportBuilder: "Report Builder", saving: "Saving...", saved: "Saved to Laboratory", saveResult: "Save Result", copyReport: "Copy Report", exportPdf: "Export PDF", exportLatex: "Export LaTeX", exportDocx: "Export DOCX", sendWriter: "Send to Writer", sendNotebook: "Send to Notebook", profile: "Active publication profile", asset: "Saved asset", exportPacket: "Export packet", exportPreview: "Export preview", template: "Template", brand: "Brand", sections: "Sections", attachments: "Attachments", readiness: "Report readiness", history: "Report history", chars: "chars", noSnapshots: "No local report snapshots yet.", bridge: "Bridge", pushLive: "Push Live", noWriter: "Writer document not found" };
     const [enabledSections, setEnabledSections] = React.useState<string[]>(REPORT_REQUIRED_SECTIONS);
     const [reportTone, setReportTone] = React.useState<ReportTone>("scientific");
     const [reportTemplate, setReportTemplate] = React.useState<ReportTemplate>("branded");
@@ -225,12 +230,12 @@ export function LaboratoryReportLayout({
                         <div className="site-panel space-y-4 p-4">
                             <div className="flex flex-wrap items-center justify-between gap-3">
                                 <div>
-                                    <div className="site-eyebrow text-accent">Report Center</div>
+                                    <div className="site-eyebrow text-accent">{copy.center}</div>
                                     <div className="mt-1 text-sm font-black text-foreground">
                                         {REPORT_GENERATOR_FORMAT_LABELS[reportFormat]}
                                     </div>
                                 </div>
-                                <PremiumFeatureBadge label="Pro output" detail="report + verification" />
+                                <PremiumFeatureBadge label={copy.pro} detail={copy.reportVerification} />
                             </div>
                             <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                                 {(Object.keys(REPORT_GENERATOR_FORMAT_LABELS) as ReportGeneratorFormat[]).map((format) => (
@@ -266,13 +271,13 @@ export function LaboratoryReportLayout({
                             </div>
                             <div className="grid gap-2 md:grid-cols-[1fr_1fr_1fr]">
                                 <select value={reportTone} onChange={(event) => setReportTone(event.target.value as ReportTone)} className="h-10 rounded-xl border border-border/70 bg-background px-3 text-sm font-semibold">
-                                    <option value="scientific">Scientific tone</option>
-                                    <option value="student">Student tone</option>
-                                    <option value="teacher">Teacher tone</option>
-                                    <option value="lab">Lab tone</option>
+                                    <option value="scientific">{copy.scientific}</option>
+                                    <option value="student">{copy.student}</option>
+                                    <option value="teacher">{copy.teacher}</option>
+                                    <option value="lab">{copy.lab}</option>
                                 </select>
-                                <button type="button" onClick={() => setEnabledSections((current) => [...current].reverse())} className="site-btn px-3 text-xs">Reverse section order</button>
-                                <button type="button" onClick={() => setAttachments((current) => ({ ...current, graph: !current.graph }))} className="site-btn px-3 text-xs">Graph {attachments.graph ? "on" : "off"}</button>
+                                <button type="button" onClick={() => setEnabledSections((current) => [...current].reverse())} className="site-btn px-3 text-xs">{copy.reverse}</button>
+                                <button type="button" onClick={() => setAttachments((current) => ({ ...current, graph: !current.graph }))} className="site-btn px-3 text-xs">{copy.graph} {attachments.graph ? copy.on : copy.off}</button>
                             </div>
                             <div className="grid gap-2 md:grid-cols-[1fr_1fr]">
                                 <select value={reportTemplate} onChange={(event) => setReportTemplate(event.target.value as ReportTemplate)} className="h-10 rounded-xl border border-border/70 bg-background px-3 text-sm font-semibold">
@@ -284,15 +289,15 @@ export function LaboratoryReportLayout({
                                 <input value={brandLabel} onChange={(event) => setBrandLabel(event.target.value)} className="h-10 rounded-xl border border-border/70 bg-background px-3 text-sm font-semibold" placeholder="Brand / course label" />
                             </div>
                             <div className="flex flex-wrap gap-2">
-                                <button type="button" onClick={() => setAttachments((current) => ({ ...current, verification: !current.verification }))} className="site-btn px-3 text-xs">Certificate {attachments.verification ? "on" : "off"}</button>
-                                <button type="button" onClick={() => setAttachments((current) => ({ ...current, code: !current.code }))} className="site-btn px-3 text-xs">Code appendix {attachments.code ? "on" : "off"}</button>
-                                <button type="button" onClick={copyDisplayedReport} className="site-btn-accent px-3 text-xs">Save report snapshot</button>
+                                <button type="button" onClick={() => setAttachments((current) => ({ ...current, verification: !current.verification }))} className="site-btn px-3 text-xs">{copy.certificate} {attachments.verification ? copy.on : copy.off}</button>
+                                <button type="button" onClick={() => setAttachments((current) => ({ ...current, code: !current.code }))} className="site-btn px-3 text-xs">{copy.codeAppendix} {attachments.code ? copy.on : copy.off}</button>
+                                <button type="button" onClick={copyDisplayedReport} className="site-btn-accent px-3 text-xs">{copy.saveSnapshot}</button>
                             </div>
                         </div>
                     ) : null}
 
                     <LaboratoryMathPanel
-                        eyebrow="Report Builder"
+                        eyebrow={copy.reportBuilder}
                         title={reportTitle}
                         content={displayedReportMarkdown}
                         accentClassName="text-amber-600"
@@ -304,33 +309,33 @@ export function LaboratoryReportLayout({
                             className="site-btn-accent px-6"
                             disabled={!saveResult || saveState === "saving"}
                         >
-                            {saveState === "saving" ? "Saving..." : saveState === "saved" ? "Saved to Laboratory" : "Save Result"}
+                            {saveState === "saving" ? copy.saving : saveState === "saved" ? copy.saved : copy.saveResult}
                         </button>
                         <button onClick={copyDisplayedReport} className="site-btn px-6">
-                            Copy Report
+                            {copy.copyReport}
                         </button>
                         <button onClick={() => window.print()} className="site-btn px-6">
-                            Export PDF
+                            {copy.exportPdf}
                         </button>
                         <button onClick={() => downloadText("mathsphere-report.tex", markdownToLatex(displayedReportMarkdown), "application/x-tex;charset=utf-8")} className="site-btn px-6">
-                            Export LaTeX
+                            {copy.exportLatex}
                         </button>
                         <button onClick={() => void downloadDocxReport(displayedReportMarkdown)} className="site-btn px-6">
-                            Export DOCX
+                            {copy.exportDocx}
                         </button>
                         <button onClick={sendToWriter} className="site-btn-accent px-6">
-                            Send to Writer
+                            {copy.sendWriter}
                         </button>
                         <button onClick={sendToNotebook} className="site-btn px-6">
-                            Send to Notebook
+                            {copy.sendNotebook}
                         </button>
                     </div>
                     <div className="text-sm text-muted-foreground">
-                        Active publication profile: <span className="font-semibold text-foreground">{LAB_PUBLICATION_PROFILE_LABELS[publicationProfile]}</span>.
+                        {copy.profile}: <span className="font-semibold text-foreground">{LAB_PUBLICATION_PROFILE_LABELS[publicationProfile]}</span>.
                     </div>
                     {saveState === "saved" && lastSavedResultTitle ? (
                         <div className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-                            Saved asset: {lastSavedResultTitle}
+                            {copy.asset}: {lastSavedResultTitle}
                         </div>
                     ) : null}
                     {saveState === "error" && saveError ? (
@@ -340,7 +345,7 @@ export function LaboratoryReportLayout({
 
                 <div className="space-y-4">
                     <details className="site-panel p-4" open={false}>
-                        <summary className="cursor-pointer text-sm font-black">Export packet</summary>
+                        <summary className="cursor-pointer text-sm font-black">{copy.exportPacket}</summary>
                         <div className="mt-3 grid gap-2">
                             {(Object.keys(LAB_PUBLICATION_PROFILE_LABELS) as WriterBridgePublicationProfile[]).map((profile) => (
                                 <button key={profile} type="button" onClick={() => setPublicationProfile(profile)} className={`rounded-xl border px-3 py-2 text-left transition-colors ${publicationProfile === profile ? "border-accent/35 bg-[var(--accent-soft)]" : "border-border/60 bg-background hover:border-accent/20"}`}>
@@ -352,17 +357,17 @@ export function LaboratoryReportLayout({
                     </details>
 
                     <details className="site-panel p-4" open>
-                        <summary className="cursor-pointer text-sm font-black">Export preview</summary>
+                        <summary className="cursor-pointer text-sm font-black">{copy.exportPreview}</summary>
                         <div className="mt-3 space-y-2 text-xs leading-5 text-muted-foreground">
-                            <div className="rounded-xl border border-border/70 bg-background px-3 py-2">Template: <span className="font-black text-foreground">{reportTemplate}</span></div>
-                            <div className="rounded-xl border border-border/70 bg-background px-3 py-2">Brand: <span className="font-black text-foreground">{brandLabel || "MathSphere"}</span></div>
-                            <div className="rounded-xl border border-border/70 bg-background px-3 py-2">Sections: <span className="font-black text-foreground">{enabledSections.length}/{REPORT_REQUIRED_SECTIONS.length}</span></div>
-                            <div className="rounded-xl border border-border/70 bg-background px-3 py-2">Attachments: graph {attachments.graph ? "on" : "off"}, certificate {attachments.verification ? "on" : "off"}, code {attachments.code ? "on" : "off"}</div>
+                            <div className="rounded-xl border border-border/70 bg-background px-3 py-2">{copy.template}: <span className="font-black text-foreground">{reportTemplate}</span></div>
+                            <div className="rounded-xl border border-border/70 bg-background px-3 py-2">{copy.brand}: <span className="font-black text-foreground">{brandLabel || "MathSphere"}</span></div>
+                            <div className="rounded-xl border border-border/70 bg-background px-3 py-2">{copy.sections}: <span className="font-black text-foreground">{enabledSections.length}/{REPORT_REQUIRED_SECTIONS.length}</span></div>
+                            <div className="rounded-xl border border-border/70 bg-background px-3 py-2">{copy.attachments}: {copy.graph.toLowerCase()} {attachments.graph ? copy.on : copy.off}, {copy.certificate.toLowerCase()} {attachments.verification ? copy.on : copy.off}, {copy.codeAppendix.toLowerCase()} {attachments.code ? copy.on : copy.off}</div>
                         </div>
                     </details>
 
                     <details className="site-panel p-4">
-                        <summary className="cursor-pointer text-sm font-black">Report readiness</summary>
+                        <summary className="cursor-pointer text-sm font-black">{copy.readiness}</summary>
                         <div className="mt-3 grid gap-3">
                             {[...executiveCards, ...readinessCards, ...supportCards].map((card) => (
                                 <LaboratoryMetricCard key={`${card.eyebrow}-${card.value}-${card.detail}`} {...card} />
@@ -371,7 +376,7 @@ export function LaboratoryReportLayout({
                     </details>
 
                     <details className="site-panel p-4">
-                        <summary className="cursor-pointer text-sm font-black">Report history</summary>
+                        <summary className="cursor-pointer text-sm font-black">{copy.history}</summary>
                         <div className="mt-3 space-y-2">
                             {reportHistory.length ? reportHistory.map((item) => (
                                 <div key={item.id} className="rounded-xl border border-border/70 bg-background px-3 py-2 text-xs">
@@ -379,7 +384,7 @@ export function LaboratoryReportLayout({
                                     <div className="mt-1 text-muted-foreground">{item.length} chars</div>
                                 </div>
                             )) : (
-                                <div className="rounded-xl border border-dashed border-border/70 px-3 py-2 text-xs text-muted-foreground">No local report snapshots yet.</div>
+                                <div className="rounded-xl border border-dashed border-border/70 px-3 py-2 text-xs text-muted-foreground">{copy.noSnapshots}</div>
                             )}
                         </div>
                     </details>
@@ -389,7 +394,7 @@ export function LaboratoryReportLayout({
                     <AssumptionManagerPanel fallbackText={reportMarkdown} onChange={setAssumptions} />
 
                     <div className="site-panel space-y-3 p-4">
-                        <div className="site-eyebrow text-accent">Bridge</div>
+                        <div className="site-eyebrow text-accent">{copy.bridge}</div>
                         <div className="flex flex-wrap gap-3">
                             {liveTargets.length ? (
                                 liveTargets.map((target) => (
@@ -405,12 +410,12 @@ export function LaboratoryReportLayout({
                                 ))
                             ) : (
                                 <div className="rounded-xl border border-border/60 bg-muted/10 px-4 py-2 text-xs font-semibold text-muted-foreground">
-                                    Writer document topilmadi
+                                    {copy.noWriter}
                                 </div>
                             )}
 
                             <button onClick={pushLiveResult} className="site-btn flex items-center gap-2" disabled={!liveTargets.length}>
-                                Push Live
+                                {copy.pushLive}
                             </button>
                         </div>
                     </div>

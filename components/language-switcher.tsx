@@ -5,7 +5,7 @@ import { useLocale } from "@/components/locale-provider";
 export function LanguageSwitcher() {
     const { locale, setLocale } = useLocale();
     return (
-        <div className="inline-flex items-center gap-0.5 rounded-full border border-[var(--ax-line)] bg-[var(--ax-surface-soft)] p-0.5" role="group" aria-label="Language">
+        <div className="inline-flex items-center gap-0.5 rounded-full border border-[var(--ax-line)] bg-[var(--ax-surface-soft)] p-0.5" role="group" aria-label={locale === "uz" ? "Til" : "Language"}>
             {(["en", "uz"] as const).map((option) => (
                 <button
                     key={option}

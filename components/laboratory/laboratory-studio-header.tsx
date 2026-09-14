@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { ArrowLeft, ChevronDown, LayoutTemplate } from "lucide-react";
+import { useLocale } from "@/components/locale-provider";
 
 type HeaderTab = { id: string; label: string };
 type TemplateItem = {
@@ -40,6 +41,11 @@ export function LaboratoryStudioHeader({
     onCloseTemplates: () => void;
     templateSections: TemplateSection[];
 }) {
+    const { locale } = useLocale();
+    const copy = locale === "uz"
+        ? { back: "Laboratoriyaga qaytish", templates: "Shablonlar", chooseTemplate: "Jarayon yoki masala presetini tanlang.", close: "Yopish", recommended: "Tavsiya etiladi", beginner: "Boshlang‘ich", advanced: "Kengaytirilgan", research: "Tadqiqot", setup: "Sozlamalar" }
+        : { back: "Back to Laboratory", templates: "Templates", chooseTemplate: "Choose a workflow or problem preset.", close: "Close", recommended: "Recommended", beginner: "Beginner", advanced: "Advanced", research: "Research", setup: "Setup" };
+    const displayedTabs = tabs.map((tab) => ({ ...tab, label: locale === "uz" ? ({ Problem: "Masala", Visualize: "Vizualizatsiya", Solve: "Yechish", Compare: "Taqqoslash", Code: "Kod", Report: "Hisobot", Notes: "Qaydlar", Advanced: "Kengaytirilgan" } as Record<string, string>)[tab.label] || tab.label : tab.label }));
     const shellRef = React.useRef<HTMLDivElement | null>(null);
     const totalTemplates = templateSections.reduce((sum, section) => sum + section.items.length, 0);
 
@@ -66,7 +72,7 @@ export function LaboratoryStudioHeader({
             <Link
                 href="/laboratory"
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] border border-[#dfe4ea] bg-[#fbfcfe] text-[#67707b]"
-                aria-label="Back to Laboratory"
+                aria-label={copy.back}
             >
                 <ArrowLeft className="h-4 w-4" />
             </Link>
@@ -76,7 +82,7 @@ export function LaboratoryStudioHeader({
             </div>
 
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1 rounded-[9px] border border-[#e2e6ec] bg-[#f8fafe] p-1 lg:flex-none">
-                {tabs.map((tab) => (
+                {displayedTabs.map((tab) => (
                     <button
                         key={tab.id}
                         type="button"
@@ -97,7 +103,7 @@ export function LaboratoryStudioHeader({
                     }`}
                 >
                     <LayoutTemplate className="h-3.5 w-3.5" />
-                    Templates
+                    {copy.templates}
                     <span className="text-[9px] text-[#8a929d]">{totalTemplates}</span>
                     <ChevronDown className={`h-3 w-3 ${templatesOpen ? "rotate-180" : ""}`} />
                 </button>
@@ -108,19 +114,19 @@ export function LaboratoryStudioHeader({
                 onChange={(event) => setExperienceLevel(event.target.value)}
                 className="ml-auto h-9 rounded-[8px] border border-[#dfe4ea] bg-white px-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#68717d] outline-none focus:border-[#9db5dc]"
             >
-                <option value="beginner">Beginner</option>
-                <option value="advanced">Advanced</option>
-                <option value="research">Research</option>
+                <option value="beginner">{copy.beginner}</option>
+                <option value="advanced">{copy.advanced}</option>
+                <option value="research">{copy.research}</option>
             </select>
 
             {templatesOpen ? (
                 <div className="absolute right-3 top-[calc(100%+8px)] z-30 w-[min(760px,94vw)] rounded-[12px] border border-[#dfe4ea] bg-white p-4 shadow-[0_18px_45px_rgba(24,36,55,0.12)] lg:right-4">
                     <div className="mb-4 flex items-center justify-between gap-4">
                         <div>
-                            <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#184eb8]">Templates</div>
-                            <div className="mt-1 text-xs text-[#747d89]">Choose a workflow or problem preset.</div>
+                            <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#184eb8]">{copy.templates}</div>
+                            <div className="mt-1 text-xs text-[#747d89]">{copy.chooseTemplate}</div>
                         </div>
-                        <button type="button" onClick={onCloseTemplates} className="rounded-[7px] border border-[#dfe4ea] px-3 py-2 text-[10px] font-semibold text-[#68717d]">Close</button>
+                        <button type="button" onClick={onCloseTemplates} className="rounded-[7px] border border-[#dfe4ea] px-3 py-2 text-[10px] font-semibold text-[#68717d]">{copy.close}</button>
                     </div>
 
                     <div className="space-y-4">
@@ -145,7 +151,7 @@ export function LaboratoryStudioHeader({
                                             <div className="mt-1 text-[11px] leading-5 text-[#727b87]">{item.description}</div>
                                             {(item.meta || item.recommended) ? (
                                                 <div className="mt-2 text-[9px] uppercase tracking-[0.1em] text-[#8a929d]">
-                                                    {item.recommended ? "Recommended" : item.meta}
+                                                    {item.recommended ? copy.recommended : item.meta}
                                                 </div>
                                             ) : null}
                                         </button>
