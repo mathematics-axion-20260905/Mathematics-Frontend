@@ -10,6 +10,7 @@ import {
 import { type WriterBridgeBlockData } from "@/lib/live-writer-bridge";
 import { LaboratoryFormattingService } from "@/components/laboratory/services/formatting-service";
 import { evaluate } from "mathjs";
+import type { Locale } from "@/lib/i18n";
 
 export const { formatMetric, toTexExpression, clampInteger } = LaboratoryFormattingService;
 
@@ -170,91 +171,95 @@ export function evaluateIntegralBenchmark(params: {
     };
 }
 
-export function buildExactSolutionMarkdown(solution: IntegralAnalyticSolveResponse | null) {
+export function buildExactSolutionMarkdown(solution: IntegralAnalyticSolveResponse | null, locale: Locale = "en") {
+    const isUz = locale === "uz";
     if (!solution || solution.status !== "exact") {
-        return "- Analitik yechim hali tayyor emas.";
+        return isUz ? "- Analitik yechim hali tayyor emas." : "- The analytical solution is not ready yet.";
     }
     const isDefinite = Boolean(solution.exact.definite_integral_latex);
     return [
         isDefinite
-            ? "- Backend `SymPy` orqali definite integralni analitik yechishga urinib ko'rdi."
-            : "- Backend `SymPy` orqali aniqmas integral uchun symbolic primitive qidirdi.",
+            ? (isUz ? "- Server `SymPy` orqali aniq integralni analitik usulda yechishga urindi." : "- The server attempted an analytical solution of the definite integral with `SymPy`.")
+            : (isUz ? "- Server `SymPy` orqali aniqmas integral uchun ramziy antiderivativni aniqladi." : "- The server searched for a symbolic antiderivative of the indefinite integral with `SymPy`."),
         solution.exact.method_label
-            ? `- Asosiy symbolic yo'nalish: **${solution.exact.method_label}**.`
-            : "- Symbolic yechim strategiyasi ajratilmadi.",
+            ? `- ${isUz ? "Asosiy ramziy yo‘nalish" : "Primary symbolic route"}: **${solution.exact.method_label}**.`
+            : (isUz ? "- Ramziy yechim strategiyasi ajratilmadi." : "- No symbolic solution strategy was identified."),
         solution.exact.antiderivative_latex
             ? `$$F(x) = ${solution.exact.antiderivative_latex}$$`
             : isDefinite
-              ? "- Antiderivative closed-form ko'rinishda ajratilmadi, lekin definite integral baholandi."
-              : "- Primitive closed-form ko'rinishda ajratilmadi.",
+              ? (isUz ? "- Antiderivativ yopiq shaklda ajratilmadi, ammo aniq integral baholandi." : "- A closed-form antiderivative was not isolated, but the definite integral was evaluated.")
+              : (isUz ? "- Antiderivativ yopiq shaklda ajratilmadi." : "- A closed-form antiderivative was not isolated."),
         solution.exact.definite_integral_latex && solution.exact.evaluated_latex
             ? `$$${solution.exact.definite_integral_latex} = ${solution.exact.evaluated_latex}$$`
             : solution.exact.evaluated_latex
               ? `$$${solution.exact.evaluated_latex}$$`
               : "- Yakuniy analitik ifoda qaytarilmadi.",
         solution.exact.numeric_approximation
-            ? `- Sonli ko'rinish: **${solution.exact.numeric_approximation}**`
+            ? `- ${isUz ? "Sonli ko‘rinish" : "Numerical form"}: **${solution.exact.numeric_approximation}**`
             : isDefinite
-              ? "- Sonli approksimatsiya qaytarilmadi."
-              : "- Aniqmas integral uchun sonli approksimatsiya talab qilinmadi.",
+              ? (isUz ? "- Sonli yaqinlashuv qaytarilmadi." : "- No numerical approximation was returned.")
+              : (isUz ? "- Aniqmas integral uchun sonli yaqinlashuv talab qilinmadi." : "- A numerical approximation was not required for the indefinite integral."),
         solution.exact.contains_special_functions
-            ? "- Yechim maxsus funksiyalar orqali yozilgan bo'lishi mumkin; bu ham analitik natija hisoblanadi."
-            : "- Natija elementary yoki to'g'ridan-to'g'ri symbolic ko'rinishda qaytdi.",
+            ? (isUz ? "- Yechim maxsus funksiyalar orqali ifodalangan bo‘lishi mumkin; bu analitik natija hisoblanadi." : "- The result may use special functions; it remains an analytical result.")
+            : (isUz ? "- Natija elementar yoki bevosita ramziy ko‘rinishda qaytarildi." : "- The result was returned in an elementary or direct symbolic form."),
         solution.diagnostics?.research
-            ? `- Research readiness: **${solution.diagnostics.research.readiness_label}** | risk: **${solution.diagnostics.research.domain_risk_level}** | tier: **${solution.diagnostics.research.exactness_tier}**`
-            : "- Research audit metadata hali yo'q.",
+            ? `- ${isUz ? "Tadqiqotga tayyorlik" : "Research readiness"}: **${solution.diagnostics.research.readiness_label}** | ${isUz ? "xavf" : "risk"}: **${solution.diagnostics.research.domain_risk_level}** | ${isUz ? "daraja" : "tier"}: **${solution.diagnostics.research.exactness_tier}**`
+            : (isUz ? "- Tadqiqot auditi metama’lumotlari hali mavjud emas." : "- Research-audit metadata is not available yet."),
     ].join("\n");
 }
 
-export function buildExactMethodMarkdown(solution: IntegralAnalyticSolveResponse | null) {
+export function buildExactMethodMarkdown(solution: IntegralAnalyticSolveResponse | null, locale: Locale = "en") {
+    const isUz = locale === "uz";
     if (!solution || solution.status !== "exact") {
-        return "- Avval analitik solve ishga tushiriladi, keyin symbolic natija shu yerga yoziladi.";
+        return isUz ? "- Avval analitik yechishni ishga tushiring; ramziy natija shu yerda ko‘rsatiladi." : "- Run the analytical solve first; the symbolic result will appear here.";
     }
     const isDefinite = Boolean(solution.exact.definite_integral_latex);
     return [
-        isDefinite ? "**Definite analytic flow**" : "**Indefinite analytic flow**",
+        isDefinite ? (isUz ? "**Aniq integralning analitik jarayoni**" : "**Definite analytical workflow**") : (isUz ? "**Aniqmas integralning analitik jarayoni**" : "**Indefinite analytical workflow**"),
         "",
-        "1. Integrand `SymPy` parser orqali xavfsiz symbolic ifodaga aylantiriladi.",
+        isUz ? "1. Integrand `SymPy` parseri orqali xavfsiz ramziy ifodaga aylantiriladi." : "1. The integrand is converted to a safe symbolic expression by the `SymPy` parser.",
         solution.parser.notes.length
-            ? `2. Parser kiritmani normallashtirdi: ${solution.parser.notes.join(" ")}`
-            : "2. Parser kiritmani o'zgartirmasdan symbolic ko'rinishga tayyorladi.",
+            ? `2. ${isUz ? "Parser kiritmani normallashtirdi" : "The parser normalized the input"}: ${solution.parser.notes.join(" ")}`
+            : (isUz ? "2. Parser kiritmani o‘zgartirmasdan ramziy ko‘rinishga tayyorladi." : "2. The parser prepared the input for symbolic evaluation without modification."),
         solution.exact.method_summary
-            ? `3. Strategy: **${solution.exact.method_label || "Symbolic Reduction"}**. ${solution.exact.method_summary}`
-            : "3. SymPy primitive topish uchun umumiy symbolic reduction ishlatdi.",
-        "4. Avval antiderivative topiladi.",
-        isDefinite ? "5. So'ng definite integral chegaralarda baholanadi." : "5. Primitive `+ C` bilan yakuniy symbolic ko'rinishga keltiriladi.",
-        "6. Agar closed-form mavjud bo'lsa, latex ko'rinishda qaytariladi.",
+            ? `3. ${isUz ? "Strategiya" : "Strategy"}: **${solution.exact.method_label || (isUz ? "Ramziy soddalashtirish" : "Symbolic reduction")}**. ${solution.exact.method_summary}`
+            : (isUz ? "3. `SymPy` antiderivativni umumiy ramziy soddalashtirish orqali aniqladi." : "3. `SymPy` used general symbolic reduction to identify an antiderivative."),
+        isUz ? "4. Avval antiderivativ aniqlanadi." : "4. The antiderivative is identified first.",
+        isDefinite ? (isUz ? "5. So‘ng aniq integral chegaralarda baholanadi." : "5. The definite integral is then evaluated at the bounds.") : (isUz ? "5. Antiderivativ `+ C` bilan yakuniy ramziy ko‘rinishga keltiriladi." : "5. The antiderivative is completed with `+ C`."),
+        isUz ? "6. Yopiq shakl mavjud bo‘lsa, natija LaTeX ko‘rinishida qaytariladi." : "6. If a closed form exists, it is returned in LaTeX form.",
         solution.exact.antiderivative_latex
-            ? `- Topilgan antiderivative: $$${solution.exact.antiderivative_latex}$$`
-            : "- Antiderivative topilmasa, numerik fallback tavsiya qilinadi.",
+            ? `- ${isUz ? "Aniqlangan antiderivativ" : "Antiderivative identified"}: $$${solution.exact.antiderivative_latex}$$`
+            : (isUz ? "- Antiderivativ topilmasa, sonli usulga o‘tish tavsiya qilinadi." : "- If no antiderivative is found, a numerical fallback is recommended."),
     ].join("\n");
 }
 
 export function buildNumericalPromptMarkdown(
     mode: IntegralMode,
     solution: IntegralAnalyticSolveResponse | null,
+    locale: Locale = "en",
 ) {
+    const isUz = locale === "uz";
     if (mode === "single") {
         if (solution && !solution.can_offer_numerical) {
             return [
                 solution.message || "Bu solve lane numerik fallback bermaydi.",
-                "- Hozirgi integral turi symbolic yoki convergence tahlili bilan tugaydi.",
-                "- Numerik confirmation bu lane uchun ochiq emas.",
+                isUz ? "- Ushbu integral turi ramziy yoki yaqinlashuv tahlili bilan yakunlanadi." : "- This integral type is handled by symbolic or convergence analysis.",
+                isUz ? "- Ushbu yo‘nalishda sonli tasdiqlash mavjud emas." : "- Numerical confirmation is not available for this route.",
             ].join("\n");
         }
         return [
-            solution?.message || "Analitik closed-form yechim topilmadi.",
-            "- Shu ifoda uchun numerik estimate ishlatish mumkin.",
-            "- Hisoblash avtomatik boshlanmaydi; tugma orqali tasdiqlaysiz.",
-            "- Tasdiqdan keyin Simpson, midpoint va trapezoid taqqoslanadi.",
+            solution?.message || (isUz ? "Analitik yopiq shakldagi yechim topilmadi." : "No analytical closed-form solution was found."),
+            isUz ? "- Ushbu ifoda uchun sonli baholashni davom ettirish mumkin." : "- Numerical evaluation is available for this expression.",
+            isUz ? "- Hisoblash avtomatik boshlanmaydi; davom ettirishni tugma orqali tasdiqlang." : "- Computation does not start automatically; confirm continuation with the action button.",
+            isUz ? "- Tasdiqdan so‘ng Simpson, midpoint va trapezoid usullari taqqoslanadi." : "- Simpson, midpoint and trapezoid methods will be compared after confirmation.",
         ].join("\n");
     }
     return [
         mode === "double"
-            ? "- 2D integral symbolic emas, numerik grid bilan hisoblanadi."
-            : "- 3D integral volumetric grid bilan hisoblanadi.",
-        "- Yirik hisoblar avtomatik ishga tushmaydi.",
-        "- Agar davom etsangiz, hozirgi grid bo'yicha estimate va vizual tahlil quriladi.",
+            ? (isUz ? "- Ikki o‘lchamli integral ramziy emas, sonli hisoblash to‘ri orqali baholanadi." : "- The two-dimensional integral is evaluated numerically on a grid.")
+            : (isUz ? "- Uch o‘lchamli integral hajmiy hisoblash to‘ri orqali baholanadi." : "- The three-dimensional integral is evaluated on a volumetric grid."),
+        isUz ? "- Katta hisoblashlar avtomatik ishga tushmaydi." : "- Large computations do not start automatically.",
+        isUz ? "- Davom etsangiz, joriy to‘r bo‘yicha baho va vizual tahlil quriladi." : "- If you continue, an estimate and visual analysis will be generated for the current grid.",
     ].join("\n");
 }
 

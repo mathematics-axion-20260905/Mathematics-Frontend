@@ -417,11 +417,11 @@ export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta 
         return {
             eyebrow: "Analytic Status",
             title: solvePhase === "analytic-loading" ? "Analytic solve running" : solvePhase === "needs-numerical" || summary ? "Numerical path active" : "Waiting for solve",
-            body: buildNumericalPromptMarkdown(mode, analyticSolution),
+            body: buildNumericalPromptMarkdown(mode, analyticSolution, locale),
             badge: "Guidance",
             toneClass: "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-300",
         };
-    }, [analyticSolution, classification, mode, solvePhase, summary, taxonomyLaneGuidance]);
+    }, [analyticSolution, classification, locale, mode, solvePhase, summary, taxonomyLaneGuidance]);
 
     const fallbackExactSteps = React.useMemo(() => {
         if (analyticSolution?.status !== "exact") {
@@ -1557,10 +1557,10 @@ export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta 
                         stalePanelClassName={stalePanelClassName}
                         solveOverviewCards={solveOverviewCards}
                         analyticDerivationTitle={analyticSolution?.status === "exact" ? "Exact solution" : "Solver guidance"}
-                        analyticDerivationContent={analyticSolution?.status === "exact" ? buildExactSolutionMarkdown(analyticSolution) : buildNumericalPromptMarkdown(mode, analyticSolution)}
+                        analyticDerivationContent={analyticSolution?.status === "exact" ? buildExactSolutionMarkdown(analyticSolution, locale) : buildNumericalPromptMarkdown(mode, analyticSolution, locale)}
                         analyticDerivationAccentClassName={analyticSolution?.status === "exact" ? "text-emerald-600" : "text-amber-600"}
                         showMethodTrace={mode === "single" && !taxonomyLaneGuidance}
-                        methodTraceContent={buildExactMethodMarkdown(analyticSolution)}
+                        methodTraceContent={buildExactMethodMarkdown(analyticSolution, locale)}
                         exactSteps={visibleExactSteps}
                         methodAuditCards={methodAuditCards}
                         visibleSignals={visibleSignals}
