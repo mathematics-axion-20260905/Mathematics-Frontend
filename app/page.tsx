@@ -1,21 +1,41 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, BookOpenText, FileDown, Sigma } from "lucide-react";
 
 import { AnimatedMathSurface } from "@/components/home/animated-math-surface";
+import { useLocale } from "@/components/locale-provider";
 
-const promises = [
+const defaultPromises = [
   ["Solve", "Exact symbolic work, numerical methods and transparent assumptions."],
   ["Visualize", "Large 2D, 3D and animated scientific output as a primary result."],
   ["Preserve", "Keep the result structured, reproducible and ready for the Project."],
 ];
 
-const workflow = [
+const defaultWorkflow = [
   ["01", "Problem", "Enter the mathematical question once, with assumptions and bounds kept explicit."],
   ["02", "Visualize", "Make geometry visible before the result is reduced to a number or expression."],
   ["03", "Solve", "Prefer exact forms, then use numerical methods to verify or extend them."],
   ["04", "Interpret", "Keep derivation, diagnostics and meaning beside the primary result."],
   ["05", "Save", "Preserve the scientific object so Notebook and Writer can continue the work."],
 ];
+
+const mathLandingCopy = {
+  en: {
+    kicker: "MathSphere Laboratory · scientific computation", title: ["Mathematics,", "made", "visible."], lead: "Solve, explore and understand mathematics through exact computation, clear visualization and living scientific scenes.", open: "Open Laboratory", explore: "Explore the product",
+    productKicker: "The product", productTitle: "A laboratory built around the mathematical result.", productCopy: "The interface stays quiet until the mathematics needs depth. Enter the problem once, then move naturally from exact form to numerical verification, geometry, interpretation and export.",
+    workflowKicker: "Workflow", workflowTitle: "One problem. Every useful layer.", workflowCopy: "The hierarchy is deliberate: problem first, visualization second, result third. Advanced detail appears only when it helps the work.",
+    ecosystemKicker: "One research trail", ecosystemTitle: "The result should survive the handoff.", ecosystemCopy: "Math is one instrument in the larger Project. Save a result once, reason about it in Notebook, then use the same scientific object in Writer.",
+    finalTitle: ["Mathematics should be something you can", "see."], finalCopy: "Open a focused laboratory and move from problem to exact result, visualization and reusable scientific output.",
+  },
+  uz: {
+    kicker: "MathSphere laboratoriyasi · ilmiy hisoblash", title: ["Matematika,", "ko‘zga", "ko‘rinsin."], lead: "Matematikani aniq hisoblash, tushunarli vizualizatsiya va jonli ilmiy sahnalar orqali yeching, o‘rganing va anglang.", open: "Laboratoriyani ochish", explore: "Mahsulotni ko‘rish",
+    productKicker: "Mahsulot", productTitle: "Matematik natija atrofida qurilgan laboratoriya.", productCopy: "Interfeys matematika chuqurlik talab qilmaguncha sokin qoladi. Masalani bir marta kiriting, so‘ng aniq shakldan sonli tekshiruv, geometriya, talqin va eksportga o‘ting.",
+    workflowKicker: "Jarayon", workflowTitle: "Bitta masala. Kerakli barcha qatlamlar.", workflowCopy: "Ierarxiya ataylab shunday: avval masala, keyin vizualizatsiya, undan so‘ng natija. Murakkab tafsilot faqat ishga yordam berganda ko‘rinadi.",
+    ecosystemKicker: "Bitta tadqiqot izi", ecosystemTitle: "Natija keyingi uzatishda saqlanib qolsin.", ecosystemCopy: "Math katta Loyihadagi bitta asbob. Natijani bir marta saqlang, Notebookda fikrlang, keyin o‘sha Scientific Objectdan Writerda foydalaning.",
+    finalTitle: ["Matematika", "ko‘rinadigan"], finalCopy: "Masaladan aniq natija, vizualizatsiya va qayta ishlatiladigan ilmiy chiqishgacha o‘tadigan fokuslangan laboratoriyani oching.",
+  },
+} as const;
 
 function SurfacePreview() {
   return (
@@ -45,18 +65,22 @@ function SurfacePreview() {
 }
 
 export default function HomePage() {
+  const { locale } = useLocale();
+  const copy = mathLandingCopy[locale];
+  const promises = locale === "uz" ? [["Yeching", "Aniq ramziy hisoblash, sonli usullar va ochiq farazlardan foydalaning."], ["Ko‘rsating", "Katta 2D, 3D va animatsion ilmiy natijalarni asosiy natija sifatida ko‘ring."], ["Saqlang", "Natijani tuzilmali, takrorlanuvchi va Loyiha uchun tayyor holda saqlang."]] : defaultPromises;
+  const workflow = locale === "uz" ? [["01", "Masala", "Matematik savolni farazlar va chegaralar bilan bir marta kiriting."], ["02", "Ko‘rsating", "Natijani songa yoki ifodaga qisqartirishdan oldin geometriyani ko‘rinadigan qiling."], ["03", "Yeching", "Avval aniq shaklni oling, keyin uni tekshirish yoki kengaytirish uchun sonli usullardan foydalaning."], ["04", "Talqin qiling", "Keltirib chiqarish, diagnostika va ma’noni asosiy natija yonida saqlang."], ["05", "Saqlang", "Ilmiy obyektni Notebook va Writer davom ettira oladigan qilib saqlang."]] : defaultWorkflow;
   return (
     <div className="ax-landing">
       <div className="ax-landing-container">
         <section className="ax-landing-hero">
           <div className="ax-hero-copy">
-            <p className="ax-landing-kicker">MathSphere Laboratory · scientific computation</p>
-            <h1 className="ax-landing-display">Mathematics,<br />made <span className="italic">visible.</span></h1>
+            <p className="ax-landing-kicker">{copy.kicker}</p>
+            <h1 className="ax-landing-display">{copy.title[0]}<br />{copy.title[1]} <span className="italic">{copy.title[2]}</span></h1>
             <div className="ax-signature-rule" aria-hidden="true" />
-            <p className="ax-landing-lead">Solve, explore and understand mathematics through exact computation, clear visualization and living scientific scenes.</p>
+            <p className="ax-landing-lead">{copy.lead}</p>
             <div className="mt-8 flex flex-wrap items-center gap-2">
-              <Link href="/laboratory" className="ax-premium-primary">Open Laboratory <ArrowRight className="h-4 w-4" /></Link>
-              <Link href="#product" className="ax-premium-secondary">Explore the product <ArrowRight className="h-3.5 w-3.5 text-[var(--ax-text-faint)]" /></Link>
+              <Link href="/laboratory" className="ax-premium-primary">{copy.open} <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="#product" className="ax-premium-secondary">{copy.explore} <ArrowRight className="h-3.5 w-3.5 text-[var(--ax-text-faint)]" /></Link>
             </div>
           </div>
           <div className="ax-hero-visual"><AnimatedMathSurface /></div>
@@ -72,8 +96,8 @@ export default function HomePage() {
       <section id="product" className="ax-landing-section">
         <div className="ax-landing-container">
           <div className="ax-section-head">
-            <div><p className="ax-landing-kicker">The product</p><h2 className="ax-section-title">A laboratory built around the mathematical result.</h2></div>
-            <p className="ax-section-copy">The interface stays quiet until the mathematics needs depth. Enter the problem once, then move naturally from exact form to numerical verification, geometry, interpretation and export.</p>
+            <div><p className="ax-landing-kicker">{copy.productKicker}</p><h2 className="ax-section-title">{copy.productTitle}</h2></div>
+            <p className="ax-section-copy">{copy.productCopy}</p>
           </div>
 
           <div className="ax-product-frame">
@@ -102,21 +126,21 @@ export default function HomePage() {
 
       <section id="workflow" className="ax-landing-section ax-landing-section-alt">
         <div className="ax-landing-container">
-          <div className="ax-section-head"><div><p className="ax-landing-kicker">Workflow</p><h2 className="ax-section-title">One problem. Every useful layer.</h2></div><p className="ax-section-copy">The hierarchy is deliberate: problem first, visualization second, result third. Advanced detail appears only when it helps the work.</p></div>
+          <div className="ax-section-head"><div><p className="ax-landing-kicker">{copy.workflowKicker}</p><h2 className="ax-section-title">{copy.workflowTitle}</h2></div><p className="ax-section-copy">{copy.workflowCopy}</p></div>
           <div className="ax-editorial-list">{workflow.map(([index,title,copy])=><div key={index} className="ax-editorial-row"><div className="ax-editorial-index">{index}</div><div className="ax-editorial-title">{title}</div><p className="ax-editorial-copy">{copy}</p></div>)}</div>
         </div>
       </section>
 
       <section id="ecosystem" className="ax-landing-section ax-landing-section-alt">
         <div className="ax-landing-container">
-          <div className="ax-section-head"><div><p className="ax-landing-kicker">One research trail</p><h2 className="ax-section-title">The result should survive the handoff.</h2></div><p className="ax-section-copy">Math is one instrument in the larger Project. Save a result once, reason about it in Notebook, then use the same scientific object in Writer.</p></div>
+          <div className="ax-section-head"><div><p className="ax-landing-kicker">{copy.ecosystemKicker}</p><h2 className="ax-section-title">{copy.ecosystemTitle}</h2></div><p className="ax-section-copy">{copy.ecosystemCopy}</p></div>
           <div className="mt-14 grid gap-3 lg:grid-cols-3">
             {[{icon:Sigma,title:'Math',copy:'Solve, visualize and save the scientific result.'},{icon:BookOpenText,title:'Notebook',copy:'Keep reasoning and observations attached to the evidence.'},{icon:FileDown,title:'Writer',copy:'Turn the result into a publication without rebuilding context.'}].map(({icon:Icon,title,copy},index)=><div key={title} className="relative border-t border-[var(--ax-line)] py-7 lg:px-7 lg:first:pl-0"><div className="flex items-center gap-3"><Icon className="h-4 w-4 text-[var(--ax-accent)]"/><span className="font-serif text-[25px]">{title}</span></div><p className="mt-3 max-w-sm text-[13px] leading-6 text-[var(--ax-text-soft)]">{copy}</p>{index<2?<ArrowRight className="absolute right-2 top-9 hidden h-4 w-4 text-[var(--ax-text-faint)] lg:block"/>:null}</div>)}
           </div>
         </div>
       </section>
 
-      <section className="ax-final-cta"><div className="ax-landing-container"><h2 className="ax-final-title">Mathematics should be something you can <span className="italic">see.</span></h2><p className="ax-final-copy">Open a focused laboratory and move from problem to exact result, visualization and reusable scientific output.</p><Link href="/laboratory" className="ax-premium-primary mt-8">Open Laboratory <ArrowRight className="h-4 w-4" /></Link></div></section>
+      <section className="ax-final-cta"><div className="ax-landing-container"><h2 className="ax-final-title">{copy.finalTitle[0]} <span className="italic">{copy.finalTitle[1]}</span></h2><p className="ax-final-copy">{copy.finalCopy}</p><Link href="/laboratory" className="ax-premium-primary mt-8">{copy.open} <ArrowRight className="h-4 w-4" /></Link></div></section>
     </div>
   );
 }
