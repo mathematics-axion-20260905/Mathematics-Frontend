@@ -19,7 +19,8 @@ import {
     experienceLevelBlocks, 
     levelTabs, 
     integralNotebookBlocks, 
-    integralPresetDescriptions, 
+    integralPresetDescriptions,
+    integralPresetDescriptionsUz,
     INTEGRAL_WORKFLOW_TEMPLATES,
     INTEGRAL_PRESETS,
 } from "./constants";
@@ -45,6 +46,7 @@ import { GeometryLaneService } from "./services/geometry-lane-service";
 // Shared Services
 import { LaboratoryFormattingService } from "@/components/laboratory/services/formatting-service";
 import { createClientId } from "@/lib/client-id";
+import { useLocale } from "@/components/locale-provider";
 
 const STUDIO_SHOWCASE_TEMPLATE_ID = "studio-walkthrough";
 const STUDIO_SHOWCASE_SNAPSHOT: IntegralSolveSnapshot = {
@@ -71,6 +73,7 @@ const STUDIO_SHOWCASE_SWEEP = {
 };
 
 export function useIntegralStudio(module: LaboratoryModuleMeta) {
+    const { locale } = useLocale();
     const [mode, setMode] = React.useState<IntegralMode>(STUDIO_SHOWCASE_SNAPSHOT.mode);
     const [coordinates, setCoordinates] = React.useState<IntegralCoordinateSystem>(STUDIO_SHOWCASE_SNAPSHOT.coordinates);
     const [experienceLevel, setExperienceLevel] = React.useState<IntegralExperienceLevel>("advanced");
@@ -526,7 +529,9 @@ export function useIntegralStudio(module: LaboratoryModuleMeta) {
         [expression, lower, mode, upper],
     );
 
-    const activePresetDescription = activePreset ? integralPresetDescriptions[activePreset.label] : "";
+    const activePresetDescription = activePreset
+        ? (locale === "uz" ? integralPresetDescriptionsUz[activePreset.label] : integralPresetDescriptions[activePreset.label])
+        : "";
 
     const singleDiagnostics = React.useMemo(() => {
         if (mode !== "single" || !summary) return null;

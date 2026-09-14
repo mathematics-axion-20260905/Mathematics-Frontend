@@ -66,6 +66,10 @@ export const integralPresetDescriptions: Record<string, string> = Object.fromEnt
     INTEGRAL_PRESET_CATALOG.map((preset) => [preset.label, preset.description]),
 );
 
+export const integralPresetDescriptionsUz: Record<string, string> = Object.fromEntries(
+    INTEGRAL_PRESET_CATALOG.map((preset) => [preset.label, preset.descriptionUz]),
+);
+
 export const INTEGRAL_WORKFLOW_TEMPLATES = INTEGRAL_WORKFLOW_CATALOG;
 
 export const INTEGRAL_PRESETS = INTEGRAL_PRESET_CATALOG;

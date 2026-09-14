@@ -1,5 +1,6 @@
 import React from "react";
 import { Trash2 } from "lucide-react";
+import { useLocale } from "@/components/locale-provider";
 
 import { StudioMetricCard } from "../presentation-types";
 
@@ -9,6 +10,7 @@ type StudioStatusBarProps = {
 };
 
 export function StudioStatusBar({ cards, resetWorkspace }: StudioStatusBarProps) {
+    const { locale } = useLocale();
     return (
         <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/50 bg-background px-4 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,0,0,0.06)] transition-all">
             <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-8">
@@ -40,11 +42,11 @@ export function StudioStatusBar({ cards, resetWorkspace }: StudioStatusBarProps)
                 <div className="flex items-center gap-3 border-l border-border/50 pl-4">
                     <button
                         onClick={resetWorkspace}
-                        title="Reset Laboratory"
+                        title={locale === "uz" ? "Laboratoriyani tiklash" : "Reset Laboratory"}
                         className="flex h-8 items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/5 px-3.5 text-[10px] font-black uppercase tracking-[0.15em] text-rose-600 transition-all hover:bg-rose-500/10 hover:shadow-lg active:scale-95"
                     >
                         <Trash2 className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">Reset</span>
+                        <span className="hidden sm:inline">{locale === "uz" ? "Tiklash" : "Reset"}</span>
                     </button>
                 </div>
             </div>

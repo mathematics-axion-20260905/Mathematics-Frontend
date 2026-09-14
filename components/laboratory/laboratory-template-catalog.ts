@@ -51,12 +51,12 @@ export const DIFFERENTIAL_WORKFLOW_CATALOG = [
 ] as const;
 
 export const INTEGRAL_PRESET_CATALOG = [
-    { label: "Studio Walkthrough", mode: "single", expr: "sin(x) + x^2 / 5", lower: "0", upper: "3.14", segments: "96", description: "Birinci ochilish uchun solve, visualizer va report oqimini ko'rsatadi." },
-    { label: "Gaussian Bell", mode: "single", expr: "exp(-x^2)", lower: "-3", upper: "3", segments: "96", description: "Exact result va method spread uchun xavfsiz benchmark." },
-    { label: "Oscillatory Fresnel", mode: "single", expr: "sin(x^2)", lower: "0", upper: "6", segments: "140", description: "Oscillation va stability audit uchun." },
-    { label: "Endpoint Singularity", mode: "single", expr: "1/sqrt(x)", lower: "0", upper: "1", segments: "120", description: "Boundary singularity va convergence signal uchun." },
-    { label: "Wave Surface", mode: "double", expr: "sin(x) * cos(y) + 0.25 * x", x: "[-6.28, 6.28]", y: "[-6.28, 6.28]", nx: "34", ny: "34", description: "2D surface response va grid audit uchun." },
-    { label: "Radial Energy Cloud", mode: "triple", expr: "exp(-(x^2 + y^2 + z^2)/4)", x: "[-4, 4]", y: "[-4, 4]", z: "[-4, 4]", nx: "12", ny: "12", nz: "12", description: "3D density va volumetric intuition uchun." },
+    { label: "Studio Walkthrough", mode: "single", expr: "sin(x) + x^2 / 5", lower: "0", upper: "3.14", segments: "96", description: "A guided baseline for solving, visual inspection and report preparation.", descriptionUz: "Yechish, vizual tekshiruv va hisobot tayyorlash uchun boshlang‘ich ish jarayoni." },
+    { label: "Gaussian Bell", mode: "single", expr: "exp(-x^2)", lower: "-3", upper: "3", segments: "96", description: "A benchmark for exact evaluation and numerical method agreement.", descriptionUz: "Aniq hisoblash va sonli usullar mosligini tekshirish uchun benchmark." },
+    { label: "Oscillatory Fresnel", mode: "single", expr: "sin(x^2)", lower: "0", upper: "6", segments: "140", description: "A stress case for oscillation and numerical stability.", descriptionUz: "Tebranishlar va sonli barqarorlikni tekshirish uchun nazorat masalasi." },
+    { label: "Endpoint Singularity", mode: "single", expr: "1/sqrt(x)", lower: "0", upper: "1", segments: "120", description: "An audit case for endpoint singularity and convergence.", descriptionUz: "Chegara singularligi va yaqinlashuvni tekshirish uchun nazorat masalasi." },
+    { label: "Wave Surface", mode: "double", expr: "sin(x) * cos(y) + 0.25 * x", x: "[-6.28, 6.28]", y: "[-6.28, 6.28]", nx: "34", ny: "34", description: "Two-dimensional surface integration with grid diagnostics.", descriptionUz: "To‘r diagnostikasi bilan ikki o‘lchamli sirt integrali." },
+    { label: "Radial Energy Cloud", mode: "triple", expr: "exp(-(x^2 + y^2 + z^2)/4)", x: "[-4, 4]", y: "[-4, 4]", z: "[-4, 4]", nx: "12", ny: "12", nz: "12", description: "Three-dimensional density integration with volumetric diagnostics.", descriptionUz: "Hajmiy diagnostika bilan uch o‘lchamli zichlik integrali." },
 ] as const;
 
 export const INTEGRAL_WORKFLOW_CATALOG = [
