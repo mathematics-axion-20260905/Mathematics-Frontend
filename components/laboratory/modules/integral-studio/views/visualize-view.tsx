@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocale } from "@/components/locale-provider";
 
 import { CartesianPlot } from "@/components/laboratory/cartesian-plot";
 import { LaboratoryDataTable } from "@/components/laboratory/laboratory-data-table";
@@ -52,6 +53,42 @@ export function VisualizeView({
     setSweepEnd,
     experienceLevel,
 }: VisualizeViewProps) {
+    const { locale } = useLocale();
+    const copy = locale === "uz"
+        ? {
+              metrics: "Metrikalar",
+              computationAudit: "Hisoblash auditi",
+              samples: "Namunalar",
+              renderedPoints: "Qurilgan nuqtalar",
+              noMetrics: "Metrikalar mavjud emas",
+              noSamples: "Namunalar mavjud emas",
+              visualAudit: "Vizual audit",
+              sensitivity: "Sezgirlik tahlili",
+              sweepHint: "Segment yoki to‘r zichligi o‘zgarganda baholash siljishini kuzating.",
+              sweepTable: "Sezgirlik jadvali",
+              detailedDrift: "Siljish tafsilotlari",
+              noSweep: "Sezgirlik jadvali mavjud emas",
+              sweepEmpty: "Jadval ifoda va soha yaroqli bo‘lganda quriladi.",
+              runtimeSignals: "Bajarilish signallari",
+              validation: "Vizualizatsiya validatsiyasi",
+          }
+        : {
+              metrics: "Metrics",
+              computationAudit: "Computation Audit",
+              samples: "Samples",
+              renderedPoints: "Rendered Data Points",
+              noMetrics: "No metrics",
+              noSamples: "No samples",
+              visualAudit: "Visual Audit",
+              sensitivity: "Sensitivity Sweep",
+              sweepHint: "Monitor estimate drift as segment or grid density changes.",
+              sweepTable: "Sweep Table",
+              detailedDrift: "Detailed Drift",
+              noSweep: "No sweep",
+              sweepEmpty: "The sweep table appears when the expression and domain are valid.",
+              runtimeSignals: "Runtime Signals",
+              validation: "Visualization validation",
+          };
     const showTables = experienceLevel !== "beginner";
     const showSweep = experienceLevel === "research";
     const showSignals = experienceLevel === "research";
@@ -70,13 +107,13 @@ export function VisualizeView({
                 <div className="relative">
                     {staleOverlay}
                     <div className={`grid gap-8 lg:grid-cols-2 ${stalePanelClassName}`}>
-                        <LaboratoryDataTable eyebrow="Metrics" title="Computation Audit" columns={["Metric", "Value", "Notes"]} rows={methodTableRows} emptyMessage="No metrics" />
+                        <LaboratoryDataTable eyebrow={copy.metrics} title={copy.computationAudit} columns={locale === "uz" ? ["Metrika", "Qiymat", "Izoh"] : ["Metric", "Value", "Notes"]} rows={methodTableRows} emptyMessage={copy.noMetrics} />
                         <LaboratoryDataTable
-                            eyebrow="Samples"
-                            title="Rendered Data Points"
+                            eyebrow={copy.samples}
+                            title={copy.renderedPoints}
                             columns={mode === "single" ? ["x", "y"] : mode === "double" ? ["x", "y", "z"] : ["x", "y", "z", "val"]}
                             rows={sampleTableRows}
-                            emptyMessage="No samples"
+                            emptyMessage={copy.noSamples}
                         />
                     </div>
                 </div>
@@ -86,7 +123,7 @@ export function VisualizeView({
                 <div className="relative">
                     {staleOverlay}
                     <div className={`site-panel space-y-4 p-5 ${stalePanelClassName}`}>
-                        <div className="site-eyebrow text-accent">Visual Audit</div>
+                        <div className="site-eyebrow text-accent">{copy.visualAudit}</div>
                         <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
                             {auditCards.map((card) => (
                                 <LaboratoryMetricCard key={`visual-${card.eyebrow}-${card.value}`} {...card} />
@@ -100,9 +137,9 @@ export function VisualizeView({
                     <div className={`site-panel space-y-6 p-6 ${stalePanelClassName}`}>
                         <div className="flex flex-wrap items-center justify-between gap-3">
                             <div>
-                                <div className="site-eyebrow text-accent">Sensitivity Sweep</div>
+                                <div className="site-eyebrow text-accent">{copy.sensitivity}</div>
                                 <div className="mt-2 text-sm leading-7 text-muted-foreground">
-                                    Segment yoki grid zichligi o&apos;zgarganda estimate driftini shu yerda kuzatasiz.
+                                    {copy.sweepHint}
                                 </div>
                             </div>
                             <div className="flex gap-2">
@@ -114,16 +151,16 @@ export function VisualizeView({
                             <div className="grid gap-6">
                                 <CartesianPlot title={sweepSeries.title} series={sweepSeries.plotSeries} />
                                 <LaboratoryDataTable
-                                    eyebrow="Sweep Table"
-                                    title="Detailed Drift"
+                                    eyebrow={copy.sweepTable}
+                                    title={copy.detailedDrift}
                                     columns={sweepSeries.metricLabel === "segments" ? ["Segments", "Simpson", "Midpoint", "Trapezoid"] : ["Grid", "Estimate", "Samples", "Z-Grid"]}
                                     rows={sweepTableRows}
-                                    emptyMessage="No sweep"
+                                    emptyMessage={copy.noSweep}
                                 />
                             </div>
                         ) : (
                             <div className="rounded-2xl border border-dashed border-border/60 bg-background/45 px-4 py-6 text-sm leading-7 text-muted-foreground">
-                                Sweep jadvali expression va domain yaroqli bo&apos;lganda shu yerda quriladi.
+                                {copy.sweepEmpty}
                             </div>
                         )}
                     </div>
@@ -133,7 +170,7 @@ export function VisualizeView({
                 <div className="relative">
                     {staleOverlay}
                     <div className={stalePanelClassName}>
-                        <LaboratorySignalPanel eyebrow="Runtime Signals" title="Visualization validation" items={visibleSignals} />
+                        <LaboratorySignalPanel eyebrow={copy.runtimeSignals} title={copy.validation} items={visibleSignals} />
                     </div>
                 </div>
                 ) : null}

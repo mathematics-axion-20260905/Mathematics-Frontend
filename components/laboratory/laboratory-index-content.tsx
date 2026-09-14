@@ -54,7 +54,7 @@ export function LaboratoryIndexContent({ modules }: { modules: LaboratoryModuleM
                     <div className="ax-work-stats">
                         <div className="ax-work-stat"><div className="ax-work-stat-value">{modules.length}</div><div className="ax-work-stat-label">{copy.studios}</div></div>
                         <div className="ax-work-stat"><div className="ax-work-stat-value">2D/3D</div><div className="ax-work-stat-label">{copy.visual}</div></div>
-                        <div className="ax-work-stat"><div className="ax-work-stat-value">Local</div><div className="ax-work-stat-label">{copy.compute}</div></div>
+                        <div className="ax-work-stat"><div className="ax-work-stat-value">{locale === "uz" ? "Lokal" : "Local"}</div><div className="ax-work-stat-label">{copy.compute}</div></div>
                     </div>
                 </section>
 

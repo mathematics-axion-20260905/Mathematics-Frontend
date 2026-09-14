@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "@/components/locale-provider";
+
 type LaboratorySignalTone = "neutral" | "info" | "warn" | "danger";
 
 type LaboratorySignal = {
@@ -30,6 +32,17 @@ export function LaboratorySignalPanel({
     title: string;
     items: LaboratorySignal[];
 }) {
+    const { locale } = useLocale();
+    const translate = (value: string) => locale === "uz"
+        ? ({
+              "Runtime Signals": "Bajarilish signallari",
+              "Validation and solver state": "Validatsiya va yechuvchi holati",
+              "Visualization validation": "Vizualizatsiya validatsiyasi",
+              "Solver Alert": "Yechuvchi ogohlantirishi",
+              "Equation format": "Tenglama formati",
+              "Initial data": "Boshlang‘ich ma’lumot",
+          } as Record<string, string>)[value] || value
+        : value;
     if (!items.length) {
         return null;
     }
@@ -37,14 +50,14 @@ export function LaboratorySignalPanel({
     return (
         <div className="site-panel p-6 space-y-4">
             <div>
-                <div className="site-eyebrow text-accent">{eyebrow}</div>
-                <div className="mt-2 text-xl font-black text-foreground">{title}</div>
+                <div className="site-eyebrow text-accent">{translate(eyebrow)}</div>
+                <div className="mt-2 text-xl font-black text-foreground">{translate(title)}</div>
             </div>
 
             <div className="grid gap-3">
                 {items.map((item) => (
                     <div key={`${item.label}-${item.text}`} className={`rounded-2xl border px-4 py-3 ${signalToneClassName(item.tone)}`}>
-                        <div className="text-[10px] font-black uppercase tracking-[0.16em]">{item.label}</div>
+                        <div className="text-[10px] font-black uppercase tracking-[0.16em]">{translate(item.label)}</div>
                         <div className="mt-2 text-sm leading-6">{item.text}</div>
                     </div>
                 ))}

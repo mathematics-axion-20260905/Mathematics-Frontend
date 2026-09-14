@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocale } from "@/components/locale-provider";
 import {
     Line,
     XAxis,
@@ -41,6 +42,7 @@ export function CartesianPlot({
         label?: string;
     };
 }) {
+    const { locale } = useLocale();
     // Stable series normalization
     const normalizedSeriesString = JSON.stringify(series);
     const normalizedSeries = React.useMemo(() => {
@@ -208,7 +210,7 @@ export function CartesianPlot({
                                     stroke="none"
                                     fill={highlightInterval.color || "var(--accent)"}
                                     fillOpacity={0.15}
-                                    name={highlightInterval.label || "Integrated Area"}
+                                    name={highlightInterval.label || (locale === "uz" ? "Integrallangan yuza" : "Integrated Area")}
                                     isAnimationActive={false}
                                     animationDuration={0}
                                 />

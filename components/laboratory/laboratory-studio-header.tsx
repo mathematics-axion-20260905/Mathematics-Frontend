@@ -45,6 +45,18 @@ export function LaboratoryStudioHeader({
     const copy = locale === "uz"
         ? { back: "Laboratoriyaga qaytish", templates: "Shablonlar", chooseTemplate: "Jarayon yoki masala presetini tanlang.", close: "Yopish", recommended: "Tavsiya etiladi", beginner: "Boshlang‘ich", advanced: "Kengaytirilgan", research: "Tadqiqot", setup: "Sozlamalar" }
         : { back: "Back to Laboratory", templates: "Templates", chooseTemplate: "Choose a workflow or problem preset.", close: "Close", recommended: "Recommended", beginner: "Beginner", advanced: "Advanced", research: "Research", setup: "Setup" };
+    const translateTemplateMeta = (value?: string) => locale === "uz"
+        ? ({
+              "Workflow Templates": "Jarayon shablonlari",
+              "Problem Templates": "Masala shablonlari",
+              "Problem Presets": "Masala presetlari",
+              workflow: "jarayon",
+              Active: "Faol",
+              single: "bir karrali",
+              double: "ikki karrali",
+              triple: "uch karrali",
+          } as Record<string, string>)[value || ""] || value
+        : value;
     const displayedTabs = tabs.map((tab) => ({ ...tab, label: locale === "uz" ? ({ Problem: "Masala", Visualize: "Vizualizatsiya", Solve: "Yechish", Compare: "Taqqoslash", Code: "Kod", Report: "Hisobot", Notes: "Qaydlar", Advanced: "Kengaytirilgan" } as Record<string, string>)[tab.label] || tab.label : tab.label }));
     const shellRef = React.useRef<HTMLDivElement | null>(null);
     const totalTemplates = templateSections.reduce((sum, section) => sum + section.items.length, 0);
@@ -132,7 +144,7 @@ export function LaboratoryStudioHeader({
                     <div className="space-y-4">
                         {templateSections.map((section) => (
                             <div key={section.id}>
-                                <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#68717d]">{section.title}</div>
+                                <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#68717d]">{translateTemplateMeta(section.title)}</div>
                                 <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                                     {section.items.map((item) => (
                                         <button
@@ -146,12 +158,12 @@ export function LaboratoryStudioHeader({
                                         >
                                             <div className="flex items-start justify-between gap-2">
                                                 <div className="text-sm font-semibold text-[#20242b]">{item.title}</div>
-                                                {item.badge ? <span className="text-[9px] font-semibold text-[#184eb8]">{item.badge}</span> : null}
+                                                {item.badge ? <span className="text-[9px] font-semibold text-[#184eb8]">{translateTemplateMeta(item.badge)}</span> : null}
                                             </div>
                                             <div className="mt-1 text-[11px] leading-5 text-[#727b87]">{item.description}</div>
                                             {(item.meta || item.recommended) ? (
                                                 <div className="mt-2 text-[9px] uppercase tracking-[0.1em] text-[#8a929d]">
-                                                    {item.recommended ? copy.recommended : item.meta}
+                                                    {item.recommended ? copy.recommended : translateTemplateMeta(item.meta)}
                                                 </div>
                                             ) : null}
                                         </button>

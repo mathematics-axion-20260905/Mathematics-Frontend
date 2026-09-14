@@ -2,6 +2,7 @@ import React from "react";
 import { ChevronDown, Save, SlidersHorizontal } from "lucide-react";
 
 import { LaboratoryInlineMathMarkdown } from "@/components/laboratory/laboratory-inline-math-markdown";
+import { useLocale } from "@/components/locale-provider";
 import { GeometryLaneBuilder } from "./geometry-lane-builder";
 import type { IntegralClassification, IntegralCoordinateSystem, IntegralMode } from "../types";
 
@@ -61,6 +62,72 @@ const inputClassName =
     "h-10 w-full rounded-[8px] border border-[#dfe4ea] bg-white px-3 text-[13px] text-[#20242b] outline-none placeholder:text-[#a1a7b0] focus:border-[#91add8]";
 
 export function IntegralProblemComposerV2(props: IntegralProblemComposerV2Props) {
+    const { locale } = useLocale();
+    const copy = locale === "uz"
+        ? {
+              problem: "Masala",
+              setup: "Integral parametrlari",
+              integralType: "Integral turi",
+              expression: "Ifoda",
+              bounds: "Chegaralar",
+              preview: "Oldindan ko‘rish",
+              solve: "Yechish",
+              solving: "Hisoblanmoqda…",
+              update: "Yechimni yangilash",
+              retry: "Qayta yechish",
+              readyAgain: "Qayta hisoblash",
+              useNumerical: "Sonli usuldan foydalanish",
+              symbolicRunning: "Ramziy tahlil bajarilmoqda",
+              exactUnavailable: "Aniq shakl mavjud emas",
+              resultReady: "Natija tayyor",
+              inputsChanged: "Kiritmalar o‘zgardi",
+              readyToSolve: "Yechishga tayyor",
+              saving: "Saqlanmoqda",
+              saved: "Saqlandi",
+              save: "Saqlash",
+              advanced: "Kengaytirilgan sozlamalar",
+              coordinates: "Koordinatalar tizimi",
+              sampling: "Diskretlash segmentlari",
+              grid: "Hisoblash to‘ri o‘lchami",
+              cartesian: "Dekart",
+              parametric: "Parametrik",
+              complexPlane: "Kompleks tekislik",
+              polar: "Qutbiy",
+              cylindrical: "Silindrik",
+              spherical: "Sferik",
+          }
+        : {
+              problem: "Problem",
+              setup: "Integral setup",
+              integralType: "Integral type",
+              expression: "Expression",
+              bounds: "Bounds",
+              preview: "Preview",
+              solve: "Solve",
+              solving: "Solving…",
+              update: "Update solution",
+              retry: "Retry solve",
+              readyAgain: "Solve again",
+              useNumerical: "Use numerical",
+              symbolicRunning: "Symbolic analysis running",
+              exactUnavailable: "Exact form unavailable",
+              resultReady: "Result ready",
+              inputsChanged: "Inputs changed",
+              readyToSolve: "Ready to solve",
+              saving: "Saving",
+              saved: "Saved",
+              save: "Save",
+              advanced: "Advanced settings",
+              coordinates: "Coordinate system",
+              sampling: "Sampling segments",
+              grid: "Grid resolution",
+              cartesian: "Cartesian",
+              parametric: "Parametric",
+              complexPlane: "Complex plane",
+              polar: "Polar",
+              cylindrical: "Cylindrical",
+              spherical: "Spherical",
+          };
     const {
         mode,
         setMode,
@@ -109,14 +176,14 @@ export function IntegralProblemComposerV2(props: IntegralProblemComposerV2Props)
         classification.kind === "contour_integral_candidate";
 
     const coordinateOptions: Array<{ id: IntegralCoordinateSystem; label: string }> = [
-        { id: "cartesian", label: "Cartesian" },
-        ...(geometryLaneActive ? [{ id: "parametric" as const, label: "Parametric" }] : []),
+        { id: "cartesian", label: copy.cartesian },
+        ...(geometryLaneActive ? [{ id: "parametric" as const, label: copy.parametric }] : []),
         ...(classification.kind === "contour_integral_candidate"
-            ? [{ id: "complex_plane" as const, label: "Complex plane" }]
+            ? [{ id: "complex_plane" as const, label: copy.complexPlane }]
             : []),
-        ...(mode === "single" || mode === "double" ? [{ id: "polar" as const, label: "Polar" }] : []),
-        ...(mode === "triple" ? [{ id: "cylindrical" as const, label: "Cylindrical" }] : []),
-        ...(mode === "triple" ? [{ id: "spherical" as const, label: "Spherical" }] : []),
+        ...(mode === "single" || mode === "double" ? [{ id: "polar" as const, label: copy.polar }] : []),
+        ...(mode === "triple" ? [{ id: "cylindrical" as const, label: copy.cylindrical }] : []),
+        ...(mode === "triple" ? [{ id: "spherical" as const, label: copy.spherical }] : []),
     ];
 
     const isLoading = solvePhase === "analytic-loading";
@@ -124,14 +191,14 @@ export function IntegralProblemComposerV2(props: IntegralProblemComposerV2Props)
     const resultReady = solvePhase === "exact-ready" || solvePhase === "numerical-ready";
 
     const solveLabel = isLoading
-        ? "Solving…"
+        ? copy.solving
         : isResultStale
-          ? "Update solution"
+          ? copy.update
           : solvePhase === "error"
-            ? "Retry solve"
+            ? copy.retry
             : resultReady
-              ? "Solve again"
-              : "Solve";
+              ? copy.readyAgain
+              : copy.solve;
 
     const rangeRows =
         mode === "single"
@@ -154,8 +221,8 @@ export function IntegralProblemComposerV2(props: IntegralProblemComposerV2Props)
             <div className="border-b border-[#e7eaf0] px-4 py-3.5">
                 <div className="flex items-start justify-between gap-3">
                     <div>
-                        <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#184eb8]">Problem</div>
-                        <div className="mt-1 font-serif text-[22px] tracking-[-0.025em] text-[#171a20]">Integral setup</div>
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#184eb8]">{copy.problem}</div>
+                        <div className="mt-1 font-serif text-[22px] tracking-[-0.025em] text-[#171a20]">{copy.setup}</div>
                     </div>
                     {activePresetDescription ? (
                         <div className="max-w-[160px] text-right text-[10px] leading-4 text-[#858d98]">{activePresetDescription}</div>
@@ -165,7 +232,7 @@ export function IntegralProblemComposerV2(props: IntegralProblemComposerV2Props)
 
             <div className="space-y-4 p-4">
                 <div>
-                    <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7b8490]">Integral type</div>
+                    <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7b8490]">{copy.integralType}</div>
                     <div className="grid grid-cols-3 gap-1 rounded-[9px] bg-[#f4f6f9] p-1">
                         {modeOptions.map((option) => (
                             <button
@@ -179,14 +246,14 @@ export function IntegralProblemComposerV2(props: IntegralProblemComposerV2Props)
                                 }`}
                             >
                                 <div className="font-serif text-lg leading-none">{option.symbol}</div>
-                                <div className="mt-1 text-[9px] font-semibold uppercase tracking-[0.09em]">{option.label}</div>
+                                <div className="mt-1 text-[9px] font-semibold uppercase tracking-[0.09em]">{locale === "uz" ? ({ Single: "Bir karrali", Double: "Ikki karrali", Triple: "Uch karrali" } as Record<string, string>)[option.label] : option.label}</div>
                             </button>
                         ))}
                     </div>
                 </div>
 
                 <label className="block">
-                    <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7b8490]">Expression</div>
+                    <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7b8490]">{copy.expression}</div>
                     <textarea
                         value={expression}
                         onChange={(event) => setExpression(event.target.value)}
@@ -198,8 +265,8 @@ export function IntegralProblemComposerV2(props: IntegralProblemComposerV2Props)
                 </label>
 
                 <div>
-                    <div className="mb-2 flex items-center justify-between">
-                        <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7b8490]">Bounds</div>
+                        <div className="mb-2 flex items-center justify-between">
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7b8490]">{copy.bounds}</div>
                         <div className="text-[10px] text-[#9aa1aa]">min → max</div>
                     </div>
                     <div className="space-y-2">
@@ -214,7 +281,7 @@ export function IntegralProblemComposerV2(props: IntegralProblemComposerV2Props)
                 </div>
 
                 <div className="rounded-[9px] border border-[#e3e7ed] bg-[#fafbfd] px-3 py-3">
-                    <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#8b939f]">Preview</div>
+                    <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#8b939f]">{copy.preview}</div>
                     <div className="mt-2 overflow-x-auto text-[13px] text-[#262b32]">
                         <LaboratoryInlineMathMarkdown content={renderedProblemContent} />
                     </div>
@@ -235,7 +302,7 @@ export function IntegralProblemComposerV2(props: IntegralProblemComposerV2Props)
                             onClick={confirmNumericalSolve}
                             className="inline-flex h-11 items-center justify-center rounded-[9px] border border-[#cbd7e8] bg-[#f5f8fd] px-4 text-[11px] font-semibold text-[#184eb8]"
                         >
-                            Use numerical
+                            {copy.useNumerical}
                         </button>
                     ) : null}
                 </div>
@@ -243,14 +310,14 @@ export function IntegralProblemComposerV2(props: IntegralProblemComposerV2Props)
                 <div className="flex items-center justify-between gap-3 border-t border-[#edf0f3] pt-3 text-[10px]">
                     <div className={resultReady && !isResultStale ? "font-semibold text-[#25704f]" : "text-[#838b96]"}>
                         {isLoading
-                            ? "Symbolic analysis running"
+                            ? copy.symbolicRunning
                             : needsNumerical
-                              ? "Exact form unavailable"
+                              ? copy.exactUnavailable
                               : resultReady && !isResultStale
-                                ? "Result ready"
+                                ? copy.resultReady
                                 : isResultStale
-                                  ? "Inputs changed"
-                                  : "Ready to solve"}
+                                  ? copy.inputsChanged
+                                  : copy.readyToSolve}
                     </div>
                     {saveResult ? (
                         <button
@@ -260,19 +327,19 @@ export function IntegralProblemComposerV2(props: IntegralProblemComposerV2Props)
                             className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-[#66707c] disabled:opacity-40"
                         >
                             <Save className="h-3.5 w-3.5" />
-                            {saveState === "saving" ? "Saving" : saveState === "saved" ? "Saved" : "Save"}
+                            {saveState === "saving" ? copy.saving : saveState === "saved" ? copy.saved : copy.save}
                         </button>
                     ) : null}
                 </div>
 
                 <details className="group rounded-[9px] border border-[#e3e7ed] bg-[#fcfdff]">
                     <summary className="flex cursor-pointer list-none items-center justify-between px-3.5 py-3 text-[10px] font-semibold uppercase tracking-[0.11em] text-[#66707c]">
-                        <span className="inline-flex items-center gap-2"><SlidersHorizontal className="h-3.5 w-3.5" />Advanced settings</span>
+                        <span className="inline-flex items-center gap-2"><SlidersHorizontal className="h-3.5 w-3.5" />{copy.advanced}</span>
                         <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
                     </summary>
                     <div className="space-y-4 border-t border-[#e8ebef] px-3.5 py-4">
                         <label className="block">
-                            <div className="mb-2 text-[9px] font-semibold uppercase tracking-[0.11em] text-[#8a929d]">Coordinates</div>
+                            <div className="mb-2 text-[9px] font-semibold uppercase tracking-[0.11em] text-[#8a929d]">{copy.coordinates}</div>
                             <select value={coordinates} onChange={(event) => setCoordinates(event.target.value as IntegralCoordinateSystem)} className={inputClassName}>
                                 {coordinateOptions.map((option) => (
                                     <option key={option.id} value={option.id}>{option.label}</option>
@@ -282,12 +349,12 @@ export function IntegralProblemComposerV2(props: IntegralProblemComposerV2Props)
 
                         {mode === "single" ? (
                             <label className="block">
-                                <div className="mb-2 text-[9px] font-semibold uppercase tracking-[0.11em] text-[#8a929d]">Sampling segments</div>
+                                <div className="mb-2 text-[9px] font-semibold uppercase tracking-[0.11em] text-[#8a929d]">{copy.sampling}</div>
                                 <input value={segments} onChange={(event) => setSegments(event.target.value)} className={inputClassName} inputMode="numeric" />
                             </label>
                         ) : (
                             <div>
-                                <div className="mb-2 text-[9px] font-semibold uppercase tracking-[0.11em] text-[#8a929d]">Grid resolution</div>
+                                <div className="mb-2 text-[9px] font-semibold uppercase tracking-[0.11em] text-[#8a929d]">{copy.grid}</div>
                                 <div className={`grid gap-2 ${mode === "triple" ? "grid-cols-3" : "grid-cols-2"}`}>
                                     <input value={xResolution} onChange={(event) => setXResolution(event.target.value)} className={inputClassName} placeholder="x" inputMode="numeric" />
                                     <input value={yResolution} onChange={(event) => setYResolution(event.target.value)} className={inputClassName} placeholder="y" inputMode="numeric" />

@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocale } from "@/components/locale-provider";
 import { CartesianPlot } from "@/components/laboratory/cartesian-plot";
 import { ScientificPlot, buildScatter3DTrajectoryData } from "@/components/laboratory/scientific-plot";
 import { 
@@ -103,6 +104,56 @@ export function VisualizerDeck({
     upper,
     isResultStale = false,
 }: VisualizerDeckProps) {
+    const { locale } = useLocale();
+    const copy = locale === "uz"
+        ? {
+              geometryPreview: "Geometriya ko‘rigi",
+              parametricPath: "Parametrik yo‘l",
+              contourPath: "Kontur yo‘li",
+              complexTrace: "Kompleks tekislik kontur izi",
+              enclosedPoles: "Qamrab olingan qutblar",
+              pathAudit: "Yo‘nalish auditi",
+              function: "f(x)",
+              integratedArea: "Integrallangan yuza",
+              setupReady: "Parametrik sozlama tayyor",
+              backendSolver: "Server geometriya yechuvchisi",
+              analyzeSolve: "Tahlil qilish va yechish",
+              liveTrace: "Jonli iz tayyor",
+              previewStatus: "Ko‘rik holati",
+              interval: "Interval",
+              samples: "Namunalar",
+              nextStep: "Keyingi qadam",
+              integralValue: "Integral qiymati",
+              gridCells: "To‘r kataklari",
+              peakHeight: "Maksimal balandlik",
+              meanHeight: "O‘rtacha balandlik",
+              peakDensity: "Maksimal zichlik",
+              voxelVolume: "Voksel hajmi",
+          }
+        : {
+              geometryPreview: "Geometry Preview",
+              parametricPath: "Parametric path",
+              contourPath: "Contour path",
+              complexTrace: "complex-plane contour trace",
+              enclosedPoles: "Enclosed poles",
+              pathAudit: "path orientation audit",
+              function: "f(x)",
+              integratedArea: "Integrated Area",
+              setupReady: "Parametric setup ready",
+              backendSolver: "Backend geometry solver",
+              analyzeSolve: "Analyze and solve",
+              liveTrace: "Live trace ready",
+              previewStatus: "Preview status",
+              interval: "Interval",
+              samples: "Samples",
+              nextStep: "Next step",
+              integralValue: "Integral value",
+              gridCells: "Grid cells",
+              peakHeight: "Peak height",
+              meanHeight: "Mean height",
+              peakDensity: "Peak density",
+              voxelVolume: "Voxel volume",
+          };
     const previewSamples = previewVisualization && "samples" in previewVisualization ? previewVisualization.samples : [];
     const previewDetails = previewVisualization && "details" in previewVisualization ? previewVisualization.details : [];
     const previewLane = previewVisualization && "lane" in previewVisualization ? previewVisualization.lane : "";
@@ -126,9 +177,9 @@ export function VisualizerDeck({
             return (
                 <ScientificPlot
                     type="scatter3d"
-                    data={buildScatter3DTrajectoryData(previewSamples, { label: "Parametric path" }) as Array<Record<string, unknown>>}
+                    data={buildScatter3DTrajectoryData(previewSamples, { label: copy.parametricPath }) as Array<Record<string, unknown>>}
                     title={previewTitle}
-                    insights={["3D parametric path", "trajectory, head/tail, and projections"]}
+                    insights={[locale === "uz" ? "3D parametrik yo‘l" : "3D parametric path", locale === "uz" ? "Trayektoriya, bosh/oxir va proyeksiyalar" : "trajectory, head/tail, and projections"]}
                 />
             );
         }
@@ -139,7 +190,7 @@ export function VisualizerDeck({
                     type="surface"
                     data={previewSamples as Array<Record<string, unknown>>}
                     title={previewTitle}
-                    insights={["parametric patch preview", "lightweight geometry surface"]}
+                    insights={[locale === "uz" ? "Parametrik sirt ko‘rigi" : "parametric patch preview", locale === "uz" ? "Yengil geometriya sirti" : "lightweight geometry surface"]}
                 />
             );
         }
@@ -155,7 +206,7 @@ export function VisualizerDeck({
                         text: analyticSolution.exact.residue_analysis.enclosed_poles.map((pole) => pole.residue_latex),
                         textposition: "top center",
                         marker: { size: 11, color: "#ef4444" },
-                        name: "Enclosed poles",
+                        name: copy.enclosedPoles,
                         hovertemplate: "Re=%{x:.4f}<br>Im=%{y:.4f}<br>Residue=%{text}<extra></extra>",
                     },
                 ]
@@ -177,10 +228,10 @@ export function VisualizerDeck({
                     ] as Array<Record<string, unknown>>}
                     title={previewTitle}
                     insights={[
-                        "complex-plane contour trace",
+                        copy.complexTrace,
                         analyticSolution?.exact.residue_analysis
-                            ? `${analyticSolution.exact.residue_analysis.enclosed_poles.length} enclosed pole markers`
-                            : "path orientation audit",
+                            ? locale === "uz" ? `${analyticSolution.exact.residue_analysis.enclosed_poles.length} ta qutb belgisi` : `${analyticSolution.exact.residue_analysis.enclosed_poles.length} enclosed pole markers`
+                            : copy.pathAudit,
                     ]}
                 />
             );
@@ -191,7 +242,7 @@ export function VisualizerDeck({
                 title={previewTitle}
                 series={[
                     {
-                        label: previewLane === "contour" ? "Contour path" : "Parametric path",
+                        label: previewLane === "contour" ? copy.contourPath : copy.parametricPath,
                         color: "var(--accent)",
                         points: previewSamples,
                     },
@@ -209,7 +260,7 @@ export function VisualizerDeck({
                                     <div className="grid gap-4">
                                         {renderGeometryPreview()}
                                         <div className="rounded-2xl border border-border/60 bg-background px-4 py-4">
-                                            <div className="text-[10px] font-black uppercase tracking-[0.16em] text-accent">Geometry Preview</div>
+                                            <div className="text-[10px] font-black uppercase tracking-[0.16em] text-accent">{copy.geometryPreview}</div>
                                             <div className="mt-2 text-lg font-black text-foreground">{previewTitle}</div>
                                             <div className="mt-3 grid gap-2 sm:grid-cols-2">
                                                 {previewDetails.map((detail: string) => (
@@ -224,7 +275,7 @@ export function VisualizerDeck({
                                     <CartesianPlot 
                                         title=""
                                         highlightInterval={{ start: Number(lower), end: Number(upper) }}
-                                        series={[{ label: "f(x)", color: "var(--accent)", points: singleSeriesPoints }]} 
+                                        series={[{ label: copy.function, color: "var(--accent)", points: singleSeriesPoints }]}
                                     />
                                 ) : mode === "double" ? (
                                     <ScientificPlot

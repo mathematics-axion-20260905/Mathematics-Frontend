@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocale } from "@/components/locale-provider";
 
 import { LaboratoryMathPanel } from "@/components/laboratory/laboratory-math-panel";
 import { LaboratoryMetricCard } from "@/components/laboratory/laboratory-metric-card";
@@ -49,6 +50,48 @@ export function SolveView({
     assumptionCards,
     experienceLevel,
 }: SolveViewProps) {
+    const { locale } = useLocale();
+    const copy = locale === "uz"
+        ? {
+              result: "Natija",
+              primaryResult: "Asosiy natija",
+              exactFirst: "Avval aniq yechim · zarur bo‘lsa sonli usul",
+              interpretation: "Talqin",
+              analyticDerivation: "Analitik hosila",
+              methodTrace: "Usul izi",
+              derivationStrategy: "Hosil qilish strategiyasi",
+              visualization: "Vizualizatsiya",
+              inspectResult: "Asosiy matematik natijani tekshiring",
+              analysisDetails: "Tahlil tafsilotlari",
+              analysisHint: "Bosqichlar, sonli audit, farazlar va bajarilish diagnostikasi",
+              show: "Ko‘rsatish",
+              hide: "Yashirish",
+              methodAudit: "Usul auditi",
+              assumptions: "Farazlar",
+              noAssumptions: "Alohida soha yoki yaqinlashuv farazlari qayd etilmadi.",
+              runtimeSignals: "Bajarilish signallari",
+              validationState: "Validatsiya va yechuvchi holati",
+          }
+        : {
+              result: "Result",
+              primaryResult: "Primary result",
+              exactFirst: "Exact first · numerical when needed",
+              interpretation: "Interpretation",
+              analyticDerivation: "Analytic derivation",
+              methodTrace: "Method Trace",
+              derivationStrategy: "Derivation strategy",
+              visualization: "Visualization",
+              inspectResult: "Inspect the primary mathematical result",
+              analysisDetails: "Analysis details",
+              analysisHint: "Steps, numerical audit, assumptions and runtime diagnostics",
+              show: "Show",
+              hide: "Hide",
+              methodAudit: "Method audit",
+              assumptions: "Assumptions",
+              noAssumptions: "No separate domain or convergence assumptions were emitted.",
+              runtimeSignals: "Runtime Signals",
+              validationState: "Validation and solver state",
+          };
     const showResearchTools = experienceLevel === "research";
     const showAdvancedTools = experienceLevel === "advanced" || experienceLevel === "research";
     const hasPrimaryResult = solveOverviewCards.length > 0;
@@ -57,10 +100,10 @@ export function SolveView({
         <section className="rounded-[10px] border border-[#dfe4ea] bg-white px-4 py-4">
             <div className="mb-3 flex items-center justify-between gap-4">
                 <div>
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.13em] text-[#184eb8]">Result</div>
-                    <div className="mt-1 font-serif text-[22px] tracking-[-0.025em] text-[#171a20]">Primary result</div>
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.13em] text-[#184eb8]">{copy.result}</div>
+                    <div className="mt-1 font-serif text-[22px] tracking-[-0.025em] text-[#171a20]">{copy.primaryResult}</div>
                 </div>
-                <div className="text-[10px] text-[#949ba5]">Exact first · numerical when needed</div>
+                <div className="text-[10px] text-[#949ba5]">{copy.exactFirst}</div>
             </div>
             <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                 {solveOverviewCards.map((card) => (
@@ -74,9 +117,9 @@ export function SolveView({
         <section className="relative rounded-[10px] border border-[#dfe4ea] bg-white p-4">
             {staleOverlay}
             <div className={stalePanelClassName}>
-                <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.13em] text-[#7b8490]">Interpretation</div>
+                <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.13em] text-[#7b8490]">{copy.interpretation}</div>
                 <LaboratoryMathPanel
-                    eyebrow="Analytic derivation"
+                    eyebrow={copy.analyticDerivation}
                     title={analyticDerivationTitle}
                     content={analyticDerivationContent}
                     accentClassName={analyticDerivationAccentClassName}
@@ -90,8 +133,8 @@ export function SolveView({
             {staleOverlay}
             <div className={stalePanelClassName}>
                 <LaboratoryMathPanel
-                    eyebrow="Method Trace"
-                    title="Derivation strategy"
+                    eyebrow={copy.methodTrace}
+                    title={copy.derivationStrategy}
                     content={methodTraceContent}
                     accentClassName="text-sky-600"
                 />
@@ -127,8 +170,8 @@ export function SolveView({
                 <main className="min-w-0 space-y-4">
                     <section>
                         <div className="mb-2 flex items-center justify-between gap-4 px-1">
-                            <div className="text-[10px] font-semibold uppercase tracking-[0.13em] text-[#184eb8]">Visualization</div>
-                            <div className="text-[10px] text-[#949ba5]">Drag, inspect and compare the mathematical result</div>
+                            <div className="text-[10px] font-semibold uppercase tracking-[0.13em] text-[#184eb8]">{copy.visualization}</div>
+                            <div className="text-[10px] text-[#949ba5]">{copy.inspectResult}</div>
                         </div>
                         <div className="relative min-h-[360px] overflow-hidden rounded-[11px] border border-[#dfe4ea] bg-white p-2 [&>.site-panel-strong]:!static [&>.site-panel-strong]:!top-auto [&>.site-panel-strong]:!rounded-[8px] [&>.site-panel-strong]:!border-0 [&>.site-panel-strong]:!bg-white [&>.site-panel-strong]:!p-0 [&>.site-panel-strong]:!shadow-none">
                             {staleOverlay}
@@ -148,11 +191,11 @@ export function SolveView({
                     <details className="group rounded-[10px] border border-[#dfe4ea] bg-white" open={showResearchTools}>
                         <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3.5">
                             <div>
-                                <div className="text-[10px] font-semibold uppercase tracking-[0.13em] text-[#7b8490]">Analysis details</div>
-                                <div className="mt-1 text-[12px] text-[#59616c]">Steps, numerical audit, assumptions and runtime diagnostics</div>
+                                <div className="text-[10px] font-semibold uppercase tracking-[0.13em] text-[#7b8490]">{copy.analysisDetails}</div>
+                                <div className="mt-1 text-[12px] text-[#59616c]">{copy.analysisHint}</div>
                             </div>
-                            <div className="text-[10px] font-semibold text-[#184eb8] group-open:hidden">Show</div>
-                            <div className="hidden text-[10px] font-semibold text-[#184eb8] group-open:block">Hide</div>
+                            <div className="text-[10px] font-semibold text-[#184eb8] group-open:hidden">{copy.show}</div>
+                            <div className="hidden text-[10px] font-semibold text-[#184eb8] group-open:block">{copy.hide}</div>
                         </summary>
 
                         <div className="space-y-4 border-t border-[#e8ebef] p-4">
@@ -161,7 +204,7 @@ export function SolveView({
 
                             <div className="grid gap-4 lg:grid-cols-2">
                                 <div className="rounded-[9px] border border-[#e2e6ec] bg-[#fcfdff] p-4">
-                                    <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#66707c]">Method audit</div>
+                                    <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#66707c]">{copy.methodAudit}</div>
                                     <div className="mt-3 grid gap-2 sm:grid-cols-2">
                                         {methodAuditCards.slice(0, 4).map((card) => (
                                             <LaboratoryMetricCard key={`${card.eyebrow}-${card.value}`} {...card} />
@@ -170,7 +213,7 @@ export function SolveView({
                                 </div>
 
                                 <div className="rounded-[9px] border border-[#e2e6ec] bg-[#fcfdff] p-4">
-                                    <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#66707c]">Assumptions</div>
+                                    <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#66707c]">{copy.assumptions}</div>
                                     {assumptionCards.length ? (
                                         <div className="mt-3 grid gap-2 sm:grid-cols-2">
                                             {assumptionCards.map((card) => (
@@ -178,13 +221,13 @@ export function SolveView({
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="mt-3 text-[12px] leading-5 text-[#7c8490]">No separate domain or convergence assumptions were emitted.</div>
+                                        <div className="mt-3 text-[12px] leading-5 text-[#7c8490]">{copy.noAssumptions}</div>
                                     )}
                                 </div>
                             </div>
 
                             {showResearchTools ? (
-                                <LaboratorySignalPanel eyebrow="Runtime Signals" title="Validation and solver state" items={visibleSignals} />
+                                <LaboratorySignalPanel eyebrow={copy.runtimeSignals} title={copy.validationState} items={visibleSignals} />
                             ) : null}
                         </div>
                     </details>
