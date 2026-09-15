@@ -19,7 +19,49 @@ import { type WriterBridgeBlockData, type WriterBridgePublicationProfile } from 
 import type { MatrixStudioState } from "@/components/laboratory/modules/matrix-studio/types";
 
 function buildMatrixReportMarkdown(state: MatrixStudioState) {
-    return `# Matrix Studio Report\n\n- mode: ${state.mode}\n- dimension: ${state.dimension}\n- shape: ${state.summary.shape ?? "pending"}\n- determinant: ${state.summary.determinant ?? "pending"}\n- trace: ${state.summary.trace ?? "pending"}\n- rank: ${state.summary.rank ?? "pending"}\n- condition number: ${state.summary.conditionNumber ?? "pending"}\n- solver kind: ${state.summary.solverKind ?? "pending"}\n- residual norm: ${state.summary.residualNorm ?? "pending"}\n- decomposition: ${state.summary.decompositionSummary ?? "pending"}\n- spectral radius: ${state.summary.spectralRadius ?? "pending"}\n- method: ${state.analyticSolution?.exact.method_label ?? "client fallback"}\n\n## report notes\n${state.reportNotes.map((note) => `- ${note}`).join("\n")}`;
+    return `# Matrix Studio Report
+
+## Problem Statement
+- Mode: ${state.mode}
+- Dimension: ${state.dimension}
+- Input matrix: ${state.matrixExpression}
+- Right-hand side: ${state.rhsExpression || "none"}
+
+## Method
+- Method: ${state.analyticSolution?.exact.method_label ?? "client fallback"}
+- Solver kind: ${state.summary.solverKind ?? "pending"}
+- Decomposition: ${state.summary.decompositionSummary ?? "pending"}
+- Report notes: ${state.reportNotes.join(" | ") || "none"}
+
+## Solution
+- Shape: ${state.summary.shape ?? "pending"}
+- Determinant: ${state.summary.determinant ?? "pending"}
+- Trace: ${state.summary.trace ?? "pending"}
+- Rank: ${state.summary.rank ?? "pending"}
+- Condition number: ${state.summary.conditionNumber ?? "pending"}
+- Spectral radius: ${state.summary.spectralRadius ?? "pending"}
+- Stability: ${state.summary.stabilitySummary ?? "pending"}
+- Least squares: ${state.summary.leastSquaresSummary ?? "pending"}
+- Iterative solve: ${state.summary.iterativeSummary ?? "pending"}
+- Tensor shape: ${state.summary.tensorShape ?? "pending"}
+- Tensor ranks: ${state.summary.modeRanks?.join(", ") ?? "pending"}
+
+## Verification
+- Contract: ${state.analyticSolution?.diagnostics.contract?.status ?? "pending"}
+- Readiness: ${state.analyticSolution?.diagnostics.contract?.readiness_label ?? "pending"}
+- Risk level: ${state.analyticSolution?.diagnostics.contract?.risk_level ?? "pending"}
+- Residual norm: ${state.summary.residualNorm ?? "pending"}
+- Factor audit: ${state.summary.factorAuditSummary ?? "pending"}
+
+## Graph Interpretation
+- Spectral radius: ${state.summary.spectralRadius ?? "pending"}
+- Visualization uses the active matrix/tensor structure and the current numerical result.
+
+## Code Appendix
+- Use the Code tab for the editable reproducibility implementation and selected solver method.
+
+## Conclusion
+- Matrix/tensor analysis is ${state.analyticSolution?.diagnostics.contract?.readiness_label ?? "pending"}; review risk and residual diagnostics before publication.`;
 }
 
 function toNumericMatrix(rows: string[][]) {

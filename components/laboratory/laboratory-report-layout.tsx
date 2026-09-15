@@ -55,6 +55,29 @@ const REPORT_GENERATOR_FORMAT_DESCRIPTIONS: Record<ReportGeneratorFormat, string
 
 const REPORT_REQUIRED_SECTIONS: string[] = [...LABORATORY_REPORT_REQUIRED_SECTIONS];
 
+function canonicalReportSection(title: string) {
+    const normalized = title.trim().toLowerCase().replace(/[&/]/g, " ").replace(/\s+/g, " ");
+    const aliases: Record<string, string> = {
+        "analysis parameters": "Problem Statement",
+        objective: "Problem Statement",
+        "core results": "Solution",
+        "main result": "Solution",
+        "symbolic solution": "Solution",
+        "numerical fallback": "Solution",
+        "verification certificate": "Verification",
+        diagnostics: "Verification",
+        "research contract": "Verification",
+        "endpoint tail audit": "Verification",
+        visualization: "Graph Interpretation",
+        interpretation: "Graph Interpretation",
+        "proof architecture": "Method",
+        classification: "Method",
+        "planned sections": "Method",
+    };
+    if (REPORT_REQUIRED_SECTIONS.includes(title.trim())) return title.trim();
+    return aliases[normalized] ?? null;
+}
+
 type ReportTone = "student" | "teacher" | "scientific" | "lab";
 type ReportTemplate = "clean" | "branded" | "journal" | "teacher";
 
@@ -65,12 +88,18 @@ function applyReportCenterControls(markdown: string, enabledSections: string[], 
     let currentSection = "";
     let currentBuffer: string[] | null = null;
     for (const line of lines) {
-        const heading = line.match(/^##\s+(.+)$/);
+        const heading = line.match(/^#{2,6}\s+(.+)$/);
         if (heading) {
-            currentSection = heading[1].trim();
-            currentBuffer = REPORT_REQUIRED_SECTIONS.includes(currentSection) ? [line] : null;
+            const canonicalSection = canonicalReportSection(heading[1]);
+            currentSection = canonicalSection || "";
+            const existingSection = canonicalSection ? sections.get(canonicalSection) : undefined;
+            currentBuffer = canonicalSection ? existingSection || [`## ${canonicalSection}`] : null;
             if (currentBuffer) {
-                sections.set(currentSection, currentBuffer);
+                if (!sections.has(canonicalSection!)) {
+                    sections.set(canonicalSection!, currentBuffer);
+                } else {
+                    currentBuffer.push(`\n### ${heading[1].trim()}`);
+                }
                 continue;
             }
         }

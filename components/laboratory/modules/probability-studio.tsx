@@ -19,7 +19,43 @@ import { type WriterBridgeBlockData, type WriterBridgePublicationProfile } from 
 import type { ProbabilityStudioState } from "@/components/laboratory/modules/probability-studio/types";
 
 function buildProbabilityReportMarkdown(state: ProbabilityStudioState) {
-    return `# Probability Report\n\n- mode: ${state.mode}\n- dimension: ${state.dimension}\n- sample size: ${state.summary.sampleSize ?? "pending"}\n- final: ${state.analyticSolution?.exact.result_latex ?? state.result.finalFormula ?? "pending"}\n- auxiliary: ${state.analyticSolution?.exact.auxiliary_latex ?? state.result.auxiliaryFormula ?? "pending"}\n- method: ${state.analyticSolution?.exact.method_label ?? "client fallback"}\n- risk: ${state.summary.riskSignal ?? "pending"}\n- readiness: ${state.contractSummary.readinessLabel}\n- contract: ${state.contractSummary.status}\n- contract risk: ${state.contractSummary.riskLevel}\n- benchmark: ${state.benchmarkSummary?.status ?? "n/a"}\n\n## report notes\n${state.reportNotes.map((note) => `- ${note}`).join("\n")}`;
+    return `# Probability Report
+
+## Problem Statement
+- Mode: ${state.mode}
+- Dimension: ${state.dimension}
+- Dataset / model input: ${state.datasetExpression}
+- Parameters: ${state.parameterExpression}
+- Sample size: ${state.summary.sampleSize ?? "pending"}
+
+## Method
+- Method: ${state.analyticSolution?.exact.method_label ?? "client fallback"}
+- Distribution family: ${state.contractSummary.family}
+- Primary diagnostic: ${state.summary.testStatistic ?? state.summary.power ?? state.summary.residualSignal ?? state.summary.posteriorPredictive ?? state.summary.pcaSignal ?? state.summary.acfSignal ?? state.summary.bootstrapSignal ?? "pending"}
+- Report notes: ${state.reportNotes.join(" | ") || "none"}
+
+## Solution
+- Final result: ${state.analyticSolution?.exact.result_latex ?? state.result.finalFormula ?? "pending"}
+- Auxiliary result: ${state.analyticSolution?.exact.auxiliary_latex ?? state.result.auxiliaryFormula ?? "pending"}
+- Secondary diagnostic: ${state.summary.intervalSignal ?? state.summary.forecastInterval ?? state.summary.explainedVariance ?? state.summary.convergenceSignal ?? "pending"}
+- Forecast: ${state.summary.forecast ?? state.summary.posteriorPredictive ?? "pending"}
+
+## Verification
+- Contract: ${state.contractSummary.status}
+- Readiness: ${state.contractSummary.readinessLabel}
+- Risk level: ${state.contractSummary.riskLevel}
+- Checks passed: ${state.contractSummary.checks.filter((item) => item.status === "ok").length}/${state.contractSummary.checks.length}
+- Benchmark: ${state.benchmarkSummary ? `${state.benchmarkSummary.label} -> ${state.benchmarkSummary.status}` : "n/a"}
+
+## Graph Interpretation
+- Distribution, forecast, scatter or diagnostic series are carried in the structured payload when available.
+- Risk signal: ${state.summary.riskSignal ?? "pending"}
+
+## Code Appendix
+- Use the Code tab for the editable reproducibility implementation.
+
+## Conclusion
+- Probability analysis remains ${state.contractSummary.readinessLabel}; interpret uncertainty and risk signals with the stated assumptions.`;
 }
 
 function buildProbabilityLivePayload(state: ProbabilityStudioState, targetId: string): WriterBridgeBlockData {

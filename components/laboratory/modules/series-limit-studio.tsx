@@ -19,7 +19,44 @@ import { type WriterBridgeBlockData, type WriterBridgePublicationProfile } from 
 import type { SeriesLimitStudioState } from "@/components/laboratory/modules/series-limit-studio/types";
 
 function buildSeriesLimitReportMarkdown(state: SeriesLimitStudioState) {
-    return `# Series / Limit Report\n\n- mode: ${state.mode}\n- expression: ${state.expression}\n- auxiliary: ${state.auxiliaryExpression || "none"}\n- dimension: ${state.dimension}\n- family: ${state.summary.detectedFamily ?? "pending"}\n- final: ${state.analyticSolution?.exact.result_latex ?? state.result.finalFormula ?? "pending"}\n- convergence: ${state.summary.convergenceSignal ?? state.summary.radiusSignal ?? "pending"}\n- proof signal: ${state.summary.proofSignal ?? "pending"}\n- error bound: ${state.summary.errorBoundSignal ?? "pending"}\n- method: ${state.analyticSolution?.exact.method_label ?? "client preview"}\n- readiness: ${state.contractSummary.readinessLabel}\n- contract: ${state.contractSummary.status}\n- contract risk: ${state.contractSummary.riskLevel}\n- benchmark: ${state.benchmarkSummary?.status ?? "n/a"}\n\n## report notes\n${state.reportNotes.map((note) => `- ${note}`).join("\n")}`;
+    return `# Series / Limit Report
+
+## Problem Statement
+- Mode: ${state.mode}
+- Expression: ${state.expression}
+- Auxiliary expression: ${state.auxiliaryExpression || "none"}
+- Dimension: ${state.dimension}
+
+## Method
+- Method: ${state.analyticSolution?.exact.method_label ?? "client preview"}
+- Detected family: ${state.summary.detectedFamily ?? "pending"}
+- Primary test: ${state.summary.testFamily ?? "pending"}
+- Secondary test: ${state.summary.secondaryTestFamily ?? "pending"}
+- Report notes: ${state.reportNotes.join(" | ") || "none"}
+
+## Solution
+- Final result: ${state.analyticSolution?.exact.result_latex ?? state.result.finalFormula ?? "pending"}
+- Convergence: ${state.summary.convergenceSignal ?? state.summary.radiusSignal ?? "pending"}
+- Partial sum: ${state.summary.partialSumSignal ?? "pending"}
+- Special family: ${state.summary.specialFamilySignal ?? "pending"}
+
+## Verification
+- Contract: ${state.contractSummary.status}
+- Readiness: ${state.contractSummary.readinessLabel}
+- Risk level: ${state.contractSummary.riskLevel}
+- Endpoint signal: ${state.summary.endpointSignal ?? "pending"}
+- Error bound: ${state.summary.errorBoundSignal ?? "pending"}
+- Benchmark: ${state.benchmarkSummary ? `${state.benchmarkSummary.label} -> ${state.benchmarkSummary.status}` : "n/a"}
+
+## Graph Interpretation
+- Partial sums, asymptotic signals and comparison series are carried in the structured plot payload when available.
+- Expansion signal: ${state.summary.expansionSignal ?? "pending"}
+
+## Code Appendix
+- Use the Code tab for the editable reproducibility implementation.
+
+## Conclusion
+- The series/limit lane is ${state.contractSummary.readinessLabel}; retain endpoint, tail and approximation checks in the final interpretation.`;
 }
 
 function buildSeriesLimitLivePayload(state: SeriesLimitStudioState, targetId: string): WriterBridgeBlockData {
