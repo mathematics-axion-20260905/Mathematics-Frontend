@@ -22,7 +22,7 @@ describe("laboratory data fetchers", () => {
         });
 
         await expect(fetchLaboratoryModules()).resolves.toEqual(fallbackLaboratoryModules);
-        expect(fetchPublicMock).toHaveBeenCalledWith("/api/laboratory/modules/?project=quantum-uz", { next: { revalidate: 60 } });
+        expect(fetchPublicMock).toHaveBeenCalledWith("/api/laboratory/modules/?project=quantum-uz", { next: { revalidate: 60 }, timeoutMs: 1200 });
     });
 
     it("falls back to local metadata when module fetch fails", async () => {
@@ -31,6 +31,6 @@ describe("laboratory data fetchers", () => {
         });
 
         await expect(fetchLaboratoryModule("integral-studio")).resolves.toEqual(fallbackLaboratoryModules[0]);
-        expect(fetchPublicMock).toHaveBeenCalledWith("/api/laboratory/modules/integral-studio/?project=quantum-uz", { next: { revalidate: 60 } });
+        expect(fetchPublicMock).toHaveBeenCalledWith("/api/laboratory/modules/integral-studio/?project=quantum-uz", { next: { revalidate: 60 }, timeoutMs: 1200 });
     });
 });

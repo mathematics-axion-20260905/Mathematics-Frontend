@@ -68,7 +68,7 @@ function sortModules(modules: LaboratoryModuleMeta[]) {
 
 export async function fetchLaboratoryModules() {
     try {
-        const response = await fetchPublic("/api/laboratory/modules/?project=quantum-uz", { next: { revalidate: 60 } });
+        const response = await fetchPublic("/api/laboratory/modules/?project=quantum-uz", { next: { revalidate: 60 }, timeoutMs: 1200 });
         if (response.ok) {
             const payload = await response.json();
             if (Array.isArray(payload)) {
@@ -107,7 +107,7 @@ export async function fetchLaboratoryModule(slug: string) {
     }
 
     try {
-        const response = await fetchPublic(`/api/laboratory/modules/${slug}/?project=quantum-uz`, { next: { revalidate: 60 } });
+        const response = await fetchPublic(`/api/laboratory/modules/${slug}/?project=quantum-uz`, { next: { revalidate: 60 }, timeoutMs: 1200 });
         if (response.ok) {
             const payload = await response.json();
             const normalized = normalizeModule(payload as Record<string, unknown>);
