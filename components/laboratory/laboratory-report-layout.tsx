@@ -1,4 +1,5 @@
 import React from "react";
+import { ArrowUpRight } from "lucide-react";
 
 import { LaboratoryMathPanel } from "@/components/laboratory/laboratory-math-panel";
 import { LaboratoryMetricCard } from "@/components/laboratory/laboratory-metric-card";
@@ -11,6 +12,13 @@ import {
 } from "@/lib/laboratory-publication-profile";
 import type { WriterBridgePublicationProfile } from "@/lib/live-writer-bridge";
 import { useLocale } from "@/components/locale-provider";
+import {
+    buildJupyterNotebookFromReport,
+    createLaboratoryReportContract,
+    LABORATORY_REPORT_REQUIRED_SECTIONS,
+    type LaboratoryTransferLink,
+    type LaboratoryTransferState,
+} from "@/lib/laboratory-report-contract";
 
 type ReportMetricCard = React.ComponentProps<typeof LaboratoryMetricCard>;
 
@@ -45,15 +53,7 @@ const REPORT_GENERATOR_FORMAT_DESCRIPTIONS: Record<ReportGeneratorFormat, string
     "latex-paper-section": "Paperga qo'shiladigan ixcham akademik section.",
 };
 
-const REPORT_REQUIRED_SECTIONS = [
-    "Problem Statement",
-    "Method",
-    "Solution",
-    "Verification",
-    "Graph Interpretation",
-    "Code Appendix",
-    "Conclusion",
-];
+const REPORT_REQUIRED_SECTIONS: string[] = [...LABORATORY_REPORT_REQUIRED_SECTIONS];
 
 type ReportTone = "student" | "teacher" | "scientific" | "lab";
 type ReportTemplate = "clean" | "branded" | "journal" | "teacher";
@@ -103,6 +103,19 @@ function downloadText(filename: string, content: string, type = "text/plain;char
     link.download = filename;
     link.click();
     URL.revokeObjectURL(url);
+}
+
+function downloadJupyterReport(title: string, markdown: string, moduleSlug: string, mode: string, publicationProfile: WriterBridgePublicationProfile) {
+    const notebook = buildJupyterNotebookFromReport({
+        title,
+        markdown,
+        contract: createLaboratoryReportContract({ moduleSlug, mode, publicationProfile }),
+    });
+    downloadText(
+        `${title.replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "mathsphere-report"}.ipynb`,
+        JSON.stringify(notebook, null, 2),
+        "application/x-ipynb+json;charset=utf-8",
+    );
 }
 
 function markdownToLatex(markdown: string) {
@@ -163,6 +176,9 @@ export function LaboratoryReportLayout({
     lastSavedResultTitle,
     sendToWriter,
     sendToNotebook,
+    lastTransfer,
+    transferState = "idle",
+    transferError = null,
     pushLiveResult,
     liveTargets,
     selectedLiveTargetId,
@@ -186,6 +202,9 @@ export function LaboratoryReportLayout({
     lastSavedResultTitle?: string | null;
     sendToWriter: () => void;
     sendToNotebook: () => void;
+    lastTransfer?: LaboratoryTransferLink | null;
+    transferState?: LaboratoryTransferState;
+    transferError?: string | null;
     pushLiveResult: () => void;
     liveTargets: ReportLiveTarget[];
     selectedLiveTargetId: string | null;
@@ -198,8 +217,8 @@ export function LaboratoryReportLayout({
 }) {
     const { locale } = useLocale();
     const copy = locale === "uz"
-        ? { center: "Hisobot markazi", pro: "Professional chiqish", reportVerification: "hisobot + tekshiruv", on: "yoqilgan", off: "o‘chirilgan", scientific: "Ilmiy ohang", student: "Talaba ohangi", teacher: "O‘qituvchi ohangi", lab: "Laboratoriya ohangi", reverse: "Bo‘limlar tartibini teskari qilish", graph: "Grafik", certificate: "Sertifikat", codeAppendix: "Kod ilovasi", saveSnapshot: "Hisobot nusxasini saqlash", reportBuilder: "Hisobot yaratgich", saving: "Saqlanmoqda…", saved: "Laboratoriyaga saqlandi", saveResult: "Natijani saqlash", copyReport: "Hisobotni nusxalash", exportPdf: "PDF eksporti", exportLatex: "LaTeX eksporti", exportDocx: "DOCX eksporti", sendWriter: "Writerga yuborish", sendNotebook: "Notebookka yuborish", profile: "Faol nashr profili", asset: "Saqlangan obyekt", exportPacket: "Eksport to‘plami", exportPreview: "Eksport ko‘rinishi", template: "Shablon", brand: "Brend", sections: "Bo‘limlar", attachments: "Ilovalar", readiness: "Hisobot tayyorligi", history: "Hisobot tarixi", chars: "belgi", noSnapshots: "Hozircha mahalliy hisobot nusxalari yo‘q.", bridge: "Bridge", pushLive: "Jonli natijani yuborish", noWriter: "Writer hujjati topilmadi" }
-        : { center: "Report Center", pro: "Pro output", reportVerification: "report + verification", on: "on", off: "off", scientific: "Scientific tone", student: "Student tone", teacher: "Teacher tone", lab: "Lab tone", reverse: "Reverse section order", graph: "Graph", certificate: "Certificate", codeAppendix: "Code appendix", saveSnapshot: "Save report snapshot", reportBuilder: "Report Builder", saving: "Saving...", saved: "Saved to Laboratory", saveResult: "Save Result", copyReport: "Copy Report", exportPdf: "Export PDF", exportLatex: "Export LaTeX", exportDocx: "Export DOCX", sendWriter: "Send to Writer", sendNotebook: "Send to Notebook", profile: "Active publication profile", asset: "Saved asset", exportPacket: "Export packet", exportPreview: "Export preview", template: "Template", brand: "Brand", sections: "Sections", attachments: "Attachments", readiness: "Report readiness", history: "Report history", chars: "chars", noSnapshots: "No local report snapshots yet.", bridge: "Bridge", pushLive: "Push Live", noWriter: "Writer document not found" };
+        ? { center: "Hisobot markazi", pro: "Professional chiqish", reportVerification: "hisobot + tekshiruv", on: "yoqilgan", off: "o‘chirilgan", scientific: "Ilmiy ohang", student: "Talaba ohangi", teacher: "O‘qituvchi ohangi", lab: "Laboratoriya ohangi", reverse: "Bo‘limlar tartibini teskari qilish", graph: "Grafik", certificate: "Sertifikat", codeAppendix: "Kod ilovasi", saveSnapshot: "Hisobot nusxasini saqlash", reportBuilder: "Hisobot yaratgich", saving: "Saqlanmoqda…", saved: "Saqlangan", saveResult: "Natijani saqlash", copyReport: "Hisobotni nusxalash", exportPdf: "PDF eksporti", exportLatex: "LaTeX eksporti", exportDocx: "DOCX eksporti", exportJupyter: "Jupyter (.ipynb)", sendWriter: "Writerga yuborish", sendNotebook: "Notebookka yuborish", sending: "Yuborilmoqda…", sent: "Yuborildi", openWriter: "Writerda ochish", openNotebook: "Notebookda ochish", transferContract: "Uzatish shartnomasi", sourceOfTruth: "Asosiy manba", sentContent: "Yuboriladigan tarkib", presentation: "Ko‘rinish profili", revisions: "Revisionlar va hash", fullPacket: "To‘liq Scientific Object snapshot’i saqlanadi; profil faqat ko‘rinishni boshqaradi.", profile: "Faol nashr profili", asset: "Saqlangan obyekt", exportPacket: "Eksport to‘plami", exportPreview: "Eksport ko‘rinishi", template: "Shablon", brand: "Brend", sections: "Bo‘limlar", attachments: "Ilovalar", readiness: "Hisobot tayyorligi", history: "Hisobot tarixi", chars: "belgi", noSnapshots: "Hozircha mahalliy hisobot nusxalari yo‘q.", bridge: "Bridge", pushLive: "Jonli natijani yuborish", noWriter: "Writer hujjati topilmadi", transferFailed: "Uzatish amalga oshmadi." }
+        : { center: "Report Center", pro: "Pro output", reportVerification: "report + verification", on: "on", off: "off", scientific: "Scientific tone", student: "Student tone", teacher: "Teacher tone", lab: "Lab tone", reverse: "Reverse section order", graph: "Graph", certificate: "Certificate", codeAppendix: "Code appendix", saveSnapshot: "Save report snapshot", reportBuilder: "Report Builder", saving: "Saving...", saved: "Saved", saveResult: "Save Result", copyReport: "Copy Report", exportPdf: "Export PDF", exportLatex: "Export LaTeX", exportDocx: "Export DOCX", exportJupyter: "Jupyter (.ipynb)", sendWriter: "Send to Writer", sendNotebook: "Send to Notebook", sending: "Sending...", sent: "Sent", openWriter: "Open in Writer", openNotebook: "Open in Notebook", transferContract: "Transfer contract", sourceOfTruth: "Source of truth", sentContent: "Sent content", presentation: "Presentation profile", revisions: "Revisions and hashes", fullPacket: "The complete Scientific Object snapshot is retained; the profile only controls presentation.", profile: "Active publication profile", asset: "Saved asset", exportPacket: "Export packet", exportPreview: "Export preview", template: "Template", brand: "Brand", sections: "Sections", attachments: "Attachments", readiness: "Report readiness", history: "Report history", chars: "chars", noSnapshots: "No local report snapshots yet.", bridge: "Bridge", pushLive: "Push Live", noWriter: "Writer document not found", transferFailed: "Transfer failed." };
     const [enabledSections, setEnabledSections] = React.useState<string[]>(REPORT_REQUIRED_SECTIONS);
     const [reportTone, setReportTone] = React.useState<ReportTone>("scientific");
     const [reportTemplate, setReportTemplate] = React.useState<ReportTemplate>("branded");
@@ -323,11 +342,14 @@ export function LaboratoryReportLayout({
                         <button onClick={() => void downloadDocxReport(displayedReportMarkdown)} className="site-btn px-6">
                             {copy.exportDocx}
                         </button>
-                        <button onClick={sendToWriter} className="site-btn-accent px-6">
-                            {copy.sendWriter}
+                        <button onClick={() => downloadJupyterReport(reportTitle, displayedReportMarkdown, reportTitle.toLowerCase().replace(/\s+/g, "-"), reportFormat || "scientific-report", publicationProfile)} className="site-btn px-6">
+                            {copy.exportJupyter}
                         </button>
-                        <button onClick={sendToNotebook} className="site-btn px-6">
-                            {copy.sendNotebook}
+                        <button onClick={sendToWriter} className="site-btn-accent px-6" disabled={transferState === "sending"}>
+                            {transferState === "sending" ? copy.sending : copy.sendWriter}
+                        </button>
+                        <button onClick={sendToNotebook} className="site-btn px-6" disabled={transferState === "sending"}>
+                            {transferState === "sending" ? copy.sending : copy.sendNotebook}
                         </button>
                     </div>
                     <div className="text-sm text-muted-foreground">
@@ -341,6 +363,19 @@ export function LaboratoryReportLayout({
                     {saveState === "error" && saveError ? (
                         <div className="text-sm font-medium text-rose-700 dark:text-rose-300">{saveError}</div>
                     ) : null}
+                    {lastTransfer ? (
+                        <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-4 text-sm">
+                            <div className="font-black text-emerald-800 dark:text-emerald-200">{copy.sent} · {lastTransfer.targetApp === "writer" ? "Writer" : "Notebook"}</div>
+                            <div className="mt-1 text-xs text-emerald-800/75 dark:text-emerald-200/75">Scientific Object v1.0 · {lastTransfer.objectId ? `object ${lastTransfer.objectId.slice(0, 14)}…` : "transfer snapshot"}</div>
+                            <a href={lastTransfer.href} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 px-3 py-2 text-xs font-black text-white transition-colors hover:bg-emerald-800 dark:bg-emerald-500 dark:text-emerald-950 dark:hover:bg-emerald-400">
+                                {lastTransfer.targetApp === "writer" ? copy.openWriter : copy.openNotebook}
+                                <ArrowUpRight className="h-3.5 w-3.5" />
+                            </a>
+                        </div>
+                    ) : null}
+                    {transferState === "error" && transferError ? (
+                        <div className="text-sm font-medium text-rose-700 dark:text-rose-300">{copy.transferFailed} {transferError}</div>
+                    ) : null}
                 </div>
 
                 <div className="space-y-4">
@@ -353,6 +388,16 @@ export function LaboratoryReportLayout({
                                     <div className="mt-1 text-xs leading-5 text-muted-foreground">{LAB_PUBLICATION_PROFILE_DESCRIPTIONS[profile]}</div>
                                 </button>
                             ))}
+                        </div>
+                    </details>
+
+                    <details className="site-panel p-4" open>
+                        <summary className="cursor-pointer text-sm font-black">{copy.transferContract}</summary>
+                        <div className="mt-3 space-y-2 text-xs leading-5 text-muted-foreground">
+                            <div className="rounded-xl border border-border/70 bg-background px-3 py-2"><span className="font-black text-foreground">{copy.sourceOfTruth}:</span> Scientific Object v1.0, current revision + complete revision history.</div>
+                            <div className="rounded-xl border border-border/70 bg-background px-3 py-2"><span className="font-black text-foreground">{copy.sentContent}:</span> input snapshot, structured result, report Markdown, verification/integrity metadata, provenance, code and visual data.</div>
+                            <div className="rounded-xl border border-border/70 bg-background px-3 py-2"><span className="font-black text-foreground">{copy.presentation}:</span> {LAB_PUBLICATION_PROFILE_LABELS[publicationProfile]}. {copy.fullPacket}</div>
+                            <div className="rounded-xl border border-border/70 bg-background px-3 py-2"><span className="font-black text-foreground">{copy.revisions}:</span> destination imports a pinned revision; the source object is not flattened or replaced.</div>
                         </div>
                     </details>
 

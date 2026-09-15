@@ -19,6 +19,7 @@ import {
 } from "@/lib/computational-integrity";
 import { assumptionsToStatements, inferAssumptions } from "@/lib/assumptions";
 import { buildNumericalTrustMeter } from "@/lib/numerical-trust";
+import { createLaboratoryReportContract } from "@/lib/laboratory-report-contract";
 
 export const SAVED_LAB_RESULT_SCHEMA_VERSION = 1;
 
@@ -211,21 +212,11 @@ function buildCanonicalMetadata(payload: CreateSavedLaboratoryResultPayload) {
             }),
             meter: numericalTrustMeter,
         },
-        report_contract: isRecord(sourceMetadata.report_contract)
-            ? sourceMetadata.report_contract
-            : {
-                  required_sections: [
-                      "Problem Statement",
-                      "Method",
-                      "Solution",
-                      "Verification",
-                      "Graph Interpretation",
-                      "Code Appendix",
-                      "Conclusion",
-                  ],
-                  export_formats: ["PDF", "LaTeX", "DOCX", "Writer"],
-                  readiness: payload.report_markdown.trim().length > 0 ? "draft-ready" : "blocked",
-              },
+        report_contract: {
+            ...(isRecord(sourceMetadata.report_contract) ? sourceMetadata.report_contract : {}),
+            ...createLaboratoryReportContract({ moduleSlug: payload.module_slug, mode: payload.mode, publicationProfile: "full" }),
+            readiness: payload.report_markdown.trim().length > 0 ? "draft-ready" : "blocked",
+        },
         billing_signal: isRecord(sourceMetadata.billing_signal)
             ? sourceMetadata.billing_signal
             : {

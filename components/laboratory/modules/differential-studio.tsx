@@ -226,7 +226,7 @@ export function DifferentialStudioModule({ module }: { module: LaboratoryModuleM
             solvePhase: state.solvePhase,
         }),
     });
-    const { copyMarkdownExport, sendToWriter, sendToNotebook, pushLiveResult } = useLaboratoryWriterBridge({
+    const { copyMarkdownExport, sendToWriter, sendToNotebook, pushLiveResult, lastTransfer, transferState, transferError } = useLaboratoryWriterBridge({
         ready: Boolean((state.summary || state.analyticSolution) && !(state.error || state.solveErrorMessage)),
         sourceLabel: "Differential Studio",
         liveTargets,
@@ -235,6 +235,15 @@ export function DifferentialStudioModule({ module }: { module: LaboratoryModuleM
         buildMarkdown: () => reportMarkdown,
         buildBlock: (targetId) => buildDifferentialLivePayload(state, targetId),
         publicationProfile,
+        getInputSnapshot: () => ({
+            mode: state.mode,
+            expression: state.expression,
+            variable: state.variable,
+            point: state.point,
+            order: state.order,
+            direction: state.direction,
+            coordinates: state.coordinates,
+        }),
         getSavedResultMeta: () => ({ id: lastSavedResult?.id ?? null, revision: lastSavedResult?.revision ?? null, scientificObjectId: typeof lastSavedResult?.metadata?.scientific_object_id === "string" ? lastSavedResult.metadata.scientific_object_id : null }),
         getDraftMeta: () => ({
             title: "Differential Analysis",
@@ -318,6 +327,9 @@ export function DifferentialStudioModule({ module }: { module: LaboratoryModuleM
                         lastSavedResultTitle={lastSavedResult?.title ?? null}
                         sendToWriter={sendToWriter}
                         sendToNotebook={sendToNotebook}
+                        lastTransfer={lastTransfer}
+                        transferState={transferState}
+                        transferError={transferError}
                         pushLiveResult={pushLiveResult}
                         liveTargets={liveTargets.map((target) => ({ id: `${target.paperId}::${target.id}`, title: `${target.paperTitle} · ${target.title}` }))}
                         selectedLiveTargetId={selectedLiveTargetId || null}

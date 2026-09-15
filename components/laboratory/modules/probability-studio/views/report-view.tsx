@@ -1,5 +1,6 @@
 import { LaboratoryReportLayout } from "@/components/laboratory/laboratory-report-layout";
 import type { WriterBridgePublicationProfile } from "@/lib/live-writer-bridge";
+import type { LaboratoryTransferLink, LaboratoryTransferState } from "@/lib/laboratory-report-contract";
 import type { ProbabilityStudioState } from "../types";
 
 type LiveTarget = {
@@ -16,6 +17,9 @@ export function ReportView({
     lastSavedResultTitle,
     sendToWriter,
     sendToNotebook,
+    lastTransfer,
+    transferState,
+    transferError,
     pushLiveResult,
     liveTargets,
     selectedLiveTargetId,
@@ -31,6 +35,9 @@ export function ReportView({
     lastSavedResultTitle: string | null;
     sendToWriter: () => void;
     sendToNotebook: () => void;
+    lastTransfer: LaboratoryTransferLink | null;
+    transferState: LaboratoryTransferState;
+    transferError: string | null;
     pushLiveResult: () => void;
     liveTargets: LiveTarget[];
     selectedLiveTargetId: string | null;
@@ -106,6 +113,9 @@ ${verificationLines.join("\n")}`;
             lastSavedResultTitle={lastSavedResultTitle}
             sendToWriter={sendToWriter}
             sendToNotebook={sendToNotebook}
+            lastTransfer={lastTransfer}
+            transferState={transferState}
+            transferError={transferError}
             pushLiveResult={pushLiveResult}
             liveTargets={liveTargets}
             selectedLiveTargetId={selectedLiveTargetId}

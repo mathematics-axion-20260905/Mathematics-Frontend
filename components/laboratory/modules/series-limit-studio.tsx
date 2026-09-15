@@ -75,7 +75,7 @@ export function SeriesLimitStudioModule({ module }: { module: LaboratoryModuleMe
             preset: state.activePresetLabel ?? null,
         }),
     });
-    const { copyMarkdownExport, sendToWriter, sendToNotebook, pushLiveResult } = useLaboratoryWriterBridge({
+    const { copyMarkdownExport, sendToWriter, sendToNotebook, pushLiveResult, lastTransfer, transferState, transferError } = useLaboratoryWriterBridge({
         ready: Boolean(state.analyticSolution || state.result.finalFormula || state.summary.detectedFamily),
         sourceLabel: "Series Limit Studio",
         liveTargets,
@@ -84,6 +84,12 @@ export function SeriesLimitStudioModule({ module }: { module: LaboratoryModuleMe
         buildMarkdown: () => reportMarkdown,
         buildBlock: (targetId) => buildSeriesLimitLivePayload(state, targetId),
         publicationProfile,
+        getInputSnapshot: () => ({
+            mode: state.mode,
+            expression: state.expression,
+            auxiliaryExpression: state.auxiliaryExpression,
+            dimension: state.dimension,
+        }),
         getSavedResultMeta: () => ({ id: lastSavedResult?.id ?? null, revision: lastSavedResult?.revision ?? null, scientificObjectId: typeof lastSavedResult?.metadata?.scientific_object_id === "string" ? lastSavedResult.metadata.scientific_object_id : null }),
         getDraftMeta: () => ({
             title: "Series / Limit Analysis",
@@ -121,6 +127,9 @@ export function SeriesLimitStudioModule({ module }: { module: LaboratoryModuleMe
                         lastSavedResultTitle={lastSavedResult?.title ?? null}
                         sendToWriter={sendToWriter}
                         sendToNotebook={sendToNotebook}
+                        lastTransfer={lastTransfer}
+                        transferState={transferState}
+                        transferError={transferError}
                         pushLiveResult={pushLiveResult}
                         liveTargets={liveTargets.map((target) => ({ id: `${target.paperId}::${target.id}`, title: `${target.paperTitle} · ${target.title}` }))}
                         selectedLiveTargetId={selectedLiveTargetId || null}

@@ -13,10 +13,15 @@ import {
     type WriterBridgeBlockData,
     type WriterBridgePublicationProfile,
 } from "@/lib/live-writer-bridge";
-import { exportLocalScientificObject, createLocalScientificObject } from "@/lib/ecosystem/local-object-store";
+import { appendLocalObjectRevision, exportLocalScientificObject, createLocalScientificObject } from "@/lib/ecosystem/local-object-store";
 import { getEcosystemObjectHref, getEcosystemTransferHref, type EcosystemApp } from "@/lib/ecosystem/apps";
 import { publishScientificObjectTransfer } from "@/lib/ecosystem/transfer";
 import { resolveActiveProjectId } from "@/lib/ecosystem/project-context";
+import {
+    createLaboratoryReportContract,
+    type LaboratoryTransferLink,
+    type LaboratoryTransferState,
+} from "@/lib/laboratory-report-contract";
 
 type WriterBridgeExportState = "idle" | "copied" | "sent";
 type WriterBridgeGuideMode = "copy" | "send" | null;
@@ -32,6 +37,7 @@ type UseLaboratoryWriterBridgeOptions = {
     buildBlock: (targetId: string) => WriterBridgeBlockData;
     publicationProfile: WriterBridgePublicationProfile;
     getSavedResultMeta?: () => { id?: string | null; revision?: number | null; scientificObjectId?: string | null } | null;
+    getInputSnapshot?: () => Record<string, unknown>;
     getDraftMeta?: (block: WriterBridgeBlockData) => {
         title?: string;
         abstract?: string;
@@ -51,8 +57,12 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
         buildBlock,
         publicationProfile,
         getSavedResultMeta,
+        getInputSnapshot,
         getDraftMeta,
     } = options;
+    const [transferState, setTransferState] = React.useState<LaboratoryTransferState>("idle");
+    const [transferError, setTransferError] = React.useState<string | null>(null);
+    const [lastTransfer, setLastTransfer] = React.useState<LaboratoryTransferLink | null>(null);
 
     const closeGuide = React.useCallback(() => {
         setGuideMode?.(null);
@@ -74,6 +84,8 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
             return;
         }
 
+        setTransferState("sending");
+        setTransferError(null);
         const block = buildBlock(`${sourceLabel.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`);
         const savedMeta = getSavedResultMeta?.();
         if (savedMeta?.id) {
@@ -88,8 +100,49 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
         // deployments never depend on another app's localStorage.
         const transferProjectId = activeProjectId || "unassigned-transfer";
         if (targetApp === "writer" || targetApp === "notebook") {
-            let objectId = savedMeta?.scientificObjectId || null;
+            let objectId: string | null = null;
+            const fullMarkdown = buildMarkdown();
+            const reportContract = createLaboratoryReportContract({
+                moduleSlug: block.moduleSlug,
+                mode: block.kind,
+                publicationProfile,
+            });
+            const presentationBlock = applyPublicationProfileToBlock(block, publicationProfile);
+            const presentationMarkdown = applyPublicationProfileToMarkdown(fullMarkdown, presentationBlock, publicationProfile);
+            const objectPayload = {
+                type: "laboratory-result",
+                title: block.title,
+                summary: block.summary,
+                report_markdown: fullMarkdown,
+                presentation_markdown: presentationMarkdown,
+                input_snapshot: getInputSnapshot?.() ?? {},
+                structured_payload: block,
+                presentation_payload: presentationBlock,
+                report_contract: reportContract,
+            };
             try {
+                // A send is a snapshot of the current calculation. If the user
+                // changed inputs after the last save, append a new revision so
+                // the destination never receives an older result by accident.
+                if (savedMeta?.scientificObjectId) {
+                    try {
+                        const nextRevision = await appendLocalObjectRevision(
+                            savedMeta.scientificObjectId,
+                            objectPayload,
+                            {
+                                sourceApp: "math",
+                                engine: "Axion Mathematics Laboratory",
+                                executionTarget: "this-device",
+                                finishedAt: new Date().toISOString(),
+                            },
+                        );
+                        block.savedResultRevision = nextRevision.revision;
+                        objectId = savedMeta.scientificObjectId;
+                    } catch {
+                        // A stale browser cache can outlive IndexedDB. In that
+                        // case create a fresh immutable object below.
+                    }
+                }
                 if (!objectId) {
                     const object = await createLocalScientificObject({
                         projectId: transferProjectId,
@@ -97,17 +150,8 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
                         domain: `mathematics/${sourceLabel.toLowerCase().replace(/\s+/g, "-")}`,
                         title: block.title,
                         sourceApp: "math",
-                        payload: {
-                            type: "laboratory-result",
-                            title: block.title,
-                            summary: block.summary,
-                            // Scientific Object transport must retain the full
-                            // computation/report payload. Publication profiles
-                            // are presentation choices for copy/export only.
-                            report_markdown: buildMarkdown(),
-                            structured_payload: block,
-                        },
-                        metadata: draftMeta,
+                        payload: objectPayload,
+                        metadata: { ...draftMeta, report_contract: reportContract },
                         provenance: {
                             sourceApp: "math",
                             engine: "Axion Mathematics Laboratory",
@@ -120,18 +164,30 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
                 const transfer = await publishScientificObjectTransfer(await exportLocalScientificObject(objectId));
                 setExportState("sent");
                 closeGuide();
-                window.location.assign(getEcosystemTransferHref(targetApp, transfer.transferId, activeProjectId));
+                setTransferState("sent");
+                setLastTransfer({
+                    targetApp,
+                    href: getEcosystemTransferHref(targetApp, transfer.transferId, activeProjectId),
+                    transferId: transfer.transferId,
+                    objectId,
+                    sentAt: new Date().toISOString(),
+                });
                 return;
             } catch (error) {
                 console.error("Scientific Object relay failed; falling back to same-origin object import", error);
-                if (!activeProjectId || !objectId) {
+                if (activeProjectId && objectId) {
+                    const href = getEcosystemObjectHref(targetApp, activeProjectId, objectId);
+                    setExportState("sent");
+                    closeGuide();
+                    setTransferState("sent");
+                    setLastTransfer({ targetApp, href, objectId, sentAt: new Date().toISOString() });
                     return;
                 }
-                window.location.assign(getEcosystemObjectHref(targetApp, activeProjectId, objectId));
-                return;
+                setTransferState("error");
+                setTransferError(error instanceof Error ? error.message : "Scientific Object transfer failed.");
             }
         }
-    }, [buildBlock, buildMarkdown, closeGuide, getDraftMeta, getSavedResultMeta, publicationProfile, ready, setExportState, sourceLabel]);
+    }, [buildBlock, buildMarkdown, closeGuide, getDraftMeta, getInputSnapshot, getSavedResultMeta, publicationProfile, ready, setExportState, sourceLabel]);
 
     const sendToWriter = React.useCallback(() => sendToApp("writer"), [sendToApp]);
     const sendToNotebook = React.useCallback(() => sendToApp("notebook"), [sendToApp]);
@@ -177,5 +233,8 @@ export function useLaboratoryWriterBridge(options: UseLaboratoryWriterBridgeOpti
         sendToWriter,
         sendToNotebook,
         pushLiveResult,
+        transferState,
+        transferError,
+        lastTransfer,
     };
 }

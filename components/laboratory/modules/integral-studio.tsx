@@ -177,7 +177,7 @@ export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta 
         [inputValidationSignals, warningSignals],
     );
 
-    const { copyMarkdownExport, sendToWriter, sendToNotebook, pushLiveResult } = useLaboratoryWriterBridge({
+    const { copyMarkdownExport, sendToWriter, sendToNotebook, pushLiveResult, lastTransfer, transferState, transferError } = useLaboratoryWriterBridge({
         ready: Boolean(summary && !solverWarning),
         sourceLabel: "Integral Studio",
         liveTargets: liveBridge.liveTargets,
@@ -205,8 +205,29 @@ export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta 
                 yResolution: normalizedYResolution,
                 zResolution: normalizedZResolution,
                 summary: summary as IntegralComputationSummary,
-            }),
+        }),
         publicationProfile,
+        getSavedResultMeta: () => ({
+            id: lastSavedResult?.id ?? null,
+            revision: lastSavedResult?.revision ?? null,
+            scientificObjectId: typeof lastSavedResult?.metadata?.scientific_object_id === "string" ? lastSavedResult.metadata.scientific_object_id : null,
+        }),
+        getInputSnapshot: () => ({
+            mode,
+            expression,
+            lower,
+            upper,
+            xMin,
+            xMax,
+            yMin,
+            yMax,
+            zMin,
+            zMax,
+            segmentsUsed: normalizedSegments,
+            xResolution: normalizedXResolution,
+            yResolution: normalizedYResolution,
+            zResolution: normalizedZResolution,
+        }),
         getDraftMeta: () => ({
             title: "Integral Analysis",
             abstract: "Exported from laboratory.",
@@ -1625,6 +1646,9 @@ export function IntegralStudioModule({ module }: { module: LaboratoryModuleMeta 
                         lastSavedResultTitle={lastSavedResult?.title ?? null}
                         sendToWriter={sendToWriter}
                         sendToNotebook={sendToNotebook}
+                        lastTransfer={lastTransfer}
+                        transferState={transferState}
+                        transferError={transferError}
                         reportReadinessCards={reportReadinessCards}
                         annotationPanelProps={annotationPanelProps}
                         liveTargets={liveBridge.liveTargets.map((target) => ({ id: `${target.paperId}::${target.id}`, title: `${target.paperTitle} · ${target.title}` }))}

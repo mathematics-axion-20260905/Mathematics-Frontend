@@ -9,7 +9,7 @@ import {
     type SavedLaboratoryResult,
 } from "@/lib/laboratory-results";
 import type { WriterBridgeBlockData } from "@/lib/live-writer-bridge";
-import { createLocalScientificObject } from "@/lib/ecosystem/local-object-store";
+import { appendLocalObjectRevision, createLocalScientificObject, getLocalScientificObject } from "@/lib/ecosystem/local-object-store";
 import { resolveActiveProjectId } from "@/lib/ecosystem/project-context";
 
 type SaveState = "idle" | "saving" | "saved" | "error";
@@ -30,9 +30,65 @@ type UseLaboratoryResultPersistenceOptions = {
 async function saveProjectResultLocally(
     projectId: string,
     payload: CreateSavedLaboratoryResultPayload,
+    existingObjectId?: string | null,
 ): Promise<SavedLaboratoryResult> {
     const normalized = normalizeCreateSavedLaboratoryResultPayload(payload);
     const savedAt = new Date().toISOString();
+    const objectPayload = {
+        type: "laboratory-result",
+        module_slug: normalized.module_slug,
+        module_title: normalized.module_title,
+        mode: normalized.mode,
+        title: normalized.title,
+        summary: normalized.summary,
+        report_markdown: normalized.report_markdown,
+        input_snapshot: normalized.input_snapshot,
+        structured_payload: normalized.structured_payload,
+        metadata: normalized.metadata ?? {},
+        report_contract: normalized.metadata?.report_contract ?? null,
+    };
+    const provenance = {
+        sourceApp: "math" as const,
+        executionTarget: "this-device" as const,
+        inputs: normalized.input_snapshot,
+        parameters: {
+            module_slug: normalized.module_slug,
+            mode: normalized.mode,
+        },
+        finishedAt: savedAt,
+    };
+
+    if (existingObjectId) {
+        try {
+            await appendLocalObjectRevision(existingObjectId, objectPayload, provenance);
+            const existingObject = await getLocalScientificObject(existingObjectId);
+            if (existingObject) {
+                return {
+                    id: existingObject.id,
+                    module_slug: normalized.module_slug,
+                    module_title: normalized.module_title,
+                    mode: normalized.mode,
+                    title: normalized.title,
+                    summary: normalized.summary,
+                    report_markdown: normalized.report_markdown,
+                    input_snapshot: normalized.input_snapshot,
+                    structured_payload: normalized.structured_payload,
+                    metadata: {
+                        ...(normalized.metadata ?? {}),
+                        project_id: projectId,
+                        scientific_object_id: existingObject.id,
+                        storage: "local-project",
+                    },
+                    revision: existingObject.currentRevision,
+                    created_at: existingObject.createdAt || savedAt,
+                    updated_at: existingObject.updatedAt || savedAt,
+                };
+            }
+        } catch {
+            // A missing local object can occur after a browser profile reset.
+            // Fall through to create a new object rather than losing the save.
+        }
+    }
 
     const object = await createLocalScientificObject({
         projectId,
@@ -40,28 +96,8 @@ async function saveProjectResultLocally(
         domain: `mathematics/${normalized.module_slug}`,
         title: normalized.title,
         sourceApp: "math",
-        payload: {
-            type: "laboratory-result",
-            module_slug: normalized.module_slug,
-            module_title: normalized.module_title,
-            mode: normalized.mode,
-            title: normalized.title,
-            summary: normalized.summary,
-            report_markdown: normalized.report_markdown,
-            input_snapshot: normalized.input_snapshot,
-            structured_payload: normalized.structured_payload,
-            metadata: normalized.metadata ?? {},
-        },
-        provenance: {
-            sourceApp: "math",
-            executionTarget: "this-device",
-            inputs: normalized.input_snapshot,
-            parameters: {
-                module_slug: normalized.module_slug,
-                mode: normalized.mode,
-            },
-            finishedAt: savedAt,
-        },
+        payload: objectPayload,
+        provenance,
         metadata: {
             module_slug: normalized.module_slug,
             module_title: normalized.module_title,
@@ -132,8 +168,11 @@ export function useLaboratoryResultPersistence(options: UseLaboratoryResultPersi
             };
 
             const projectId = resolveActiveProjectId();
+            const existingObjectId = typeof lastSavedResult?.metadata?.scientific_object_id === "string"
+                ? lastSavedResult.metadata.scientific_object_id
+                : null;
             const result = projectId
-                ? await saveProjectResultLocally(projectId, payload)
+                ? await saveProjectResultLocally(projectId, payload, existingObjectId)
                 : await createSavedLaboratoryResult(payload);
 
             setLastSavedResult(result);
@@ -155,6 +194,7 @@ export function useLaboratoryResultPersistence(options: UseLaboratoryResultPersi
         moduleSlug,
         moduleTitle,
         ready,
+        lastSavedResult,
     ]);
 
     return {
