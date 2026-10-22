@@ -52,6 +52,15 @@ function buildSeriesLimitReportMarkdown(state: SeriesLimitStudioState) {
 - Partial sums, asymptotic signals and comparison series are carried in the structured plot payload when available.
 - Expansion signal: ${state.summary.expansionSignal ?? "pending"}
 
+\`\`\`animation
+{
+  "type": "taylor",
+  "maxOrder": 11,
+  "title": "Taylor qatorining yaqinlashish dinamikasi",
+  "caption": "Tartib (n) ortishi bilan qatorning funksiyaga yaqinlashishi (60 FPS interaktiv simulyatsiya)"
+}
+\`\`\`
+
 ## Code Appendix
 - Use the Code tab for the editable reproducibility implementation.
 

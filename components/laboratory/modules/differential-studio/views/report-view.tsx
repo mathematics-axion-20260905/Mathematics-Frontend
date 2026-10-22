@@ -217,7 +217,14 @@ ${matrixDiagnostics?.critical_point_type ? `- **Critical point type:** ${matrixD
 ${analyticSolution?.diagnostics?.contract ? `- **Contract status:** \`${analyticSolution.diagnostics.contract.status}\`\n- **Contract completeness:** \`${analyticSolution.diagnostics.contract.completeness ?? "n/a"}\`\n- **Readiness:** \`${analyticSolution.diagnostics.contract.readiness_label ?? "n/a"}\`\n- **Risk level:** \`${analyticSolution.diagnostics.contract.risk_level ?? "n/a"}\`` : ""}
 ${analyticSolution?.diagnostics?.contract?.review_notes?.length ? analyticSolution.diagnostics.contract.review_notes.map((item) => `- ${item}`).join("\n") : ""}
 ${benchmarkSummary ? `- **Benchmark:** \`${benchmarkSummary.label}\`\n- **Benchmark status:** \`${benchmarkSummary.status}\`\n- **Expected vs actual:** \`${benchmarkSummary.expectedValue}\` vs \`${benchmarkSummary.actualValue}\`` : ""}
-${mode === "sde" ? "- **Stochastic note:** single seeded path; ensemble statistics hali chiqarilmagan." : ""}
+### Living Simulation & Trajectory Dynamics
+\`\`\`animation
+{
+  "type": "vector-field",
+  "title": "Fazaviy maydon va dinamik oqim chiziqlari",
+  "caption": "Differensial modelning fazaviy fazodagi dinamikasi va integral egri chiziqlari (60 FPS interaktiv)"
+}
+\`\`\`
 
 ### Verification Certificate
 ${describeVerificationCertificate(analyticSolution, benchmarkSummary).join("\n")}
