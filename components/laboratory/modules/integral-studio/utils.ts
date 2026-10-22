@@ -342,6 +342,12 @@ export function buildIntegralLivePayload(params: {
             ],
             notes: [`Function: ${expression}`],
             plotSeries: [{ label: "f(x)", color: "#2563eb", points: singleSummary.samples }],
+            simulation: {
+                type: "vector-field",
+                title: `Integral Maydoni: ${expression}`,
+                caption: `Simpson segmentlari: ${segmentsUsed}, oraliq [${formatMetric(lower, 2)}, ${formatMetric(upper, 2)}]`,
+                params: { speed: 1.0, count: 60 },
+            },
         };
     }
     if (mode === "double") {
@@ -363,6 +369,12 @@ export function buildIntegralLivePayload(params: {
             ],
             notes: [`Function: ${expression}`, `Samples: ${doubleSummary.samples.length}`],
             plotSeries: [{ label: "x-average height", color: "#2563eb", points: xProfile }],
+            simulation: {
+                type: "wave-pde",
+                title: `2D Integral Yuzasi: ${expression}`,
+                caption: `Sirt integrali to'lqin modeli, to'r: ${xResolution}x${yResolution}`,
+                params: { frequency: 1.4, damping: 0.04, speed: 1.0 },
+            },
         };
     }
     const tripleSummary = summary as TripleIntegralSummary;
@@ -383,5 +395,11 @@ export function buildIntegralLivePayload(params: {
         ],
         notes: [`Function: ${expression}`, `Sparse samples: ${tripleSummary.samples.length}`, `Y span: ${formatMetric(yMin, 3)}..${formatMetric(yMax, 3)}`],
         plotSeries: [{ label: "x-average density", color: "#7c3aed", points: xProfile }],
+        simulation: {
+            type: "lorenz-attractor",
+            title: `Hajmiy Integral Oqimi: ${expression}`,
+            caption: `Volumetrik sohadagi 3D dinamik oqim, to'r: ${xResolution}x${yResolution}x${zResolution}`,
+            params: { sigma: 10, rho: 28, beta: 2.666 },
+        },
     };
 }

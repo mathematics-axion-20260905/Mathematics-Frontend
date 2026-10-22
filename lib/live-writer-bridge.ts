@@ -69,6 +69,12 @@ export type WriterBridgeBlockData = {
     coefficients?: WriterBridgeCoefficient[];
     matrixTables?: WriterBridgeMatrixTable[];
     plotSeries?: WriterBridgePlotSeries[];
+    simulation?: {
+        type: "fourier-epicycles" | "lorenz-attractor" | "wave-pde" | "taylor-convergence" | "double-pendulum" | "vector-field" | string;
+        title?: string;
+        caption?: string;
+        params?: Record<string, number>;
+    };
     sync?: WriterBridgeSyncMeta;
 };
 
@@ -213,7 +219,7 @@ export function findLiveWriterTargetBySelection<T extends { id: string; writerId
 }
 
 export function createLaboratoryWriterDraftHref(requestId: string) {
-    const writerDraftBaseUrl = (process.env.NEXT_PUBLIC_WRITER_OBJECT_URL || "/write/new").replace(/\/$/, "");
+    const writerDraftBaseUrl = (process.env.NEXT_PUBLIC_WRITER_OBJECT_URL || "/latex").replace(/\/$/, "");
     const separator = writerDraftBaseUrl.includes("?") ? "&" : "?";
     return `${writerDraftBaseUrl}${separator}source=laboratory&importId=${encodeURIComponent(requestId)}`;
 }
