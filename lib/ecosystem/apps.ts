@@ -7,16 +7,16 @@ export const ECOSYSTEM_NAME = process.env.NEXT_PUBLIC_ECOSYSTEM_NAME || "Axion S
 // Local development can override any app with NEXT_PUBLIC_*_URL, e.g. a different port/path.
 const configuredUrls: Record<EcosystemApp, string> = {
   science: process.env.NEXT_PUBLIC_SCIENCE_URL || "/",
-  math: process.env.NEXT_PUBLIC_MATH_URL || "/math/laboratory",
+  math: process.env.NEXT_PUBLIC_MATH_URL || "/laboratory",
   notebook: process.env.NEXT_PUBLIC_NOTEBOOK_URL || "/notebook/workspace",
-  writer: process.env.NEXT_PUBLIC_WRITER_URL || "/writer/documents",
+  writer: process.env.NEXT_PUBLIC_WRITER_URL || "/latex",
 };
 
 const configuredObjectUrls: Record<EcosystemApp, string> = {
   science: process.env.NEXT_PUBLIC_SCIENCE_OBJECT_URL || "/projects",
-  math: process.env.NEXT_PUBLIC_MATH_OBJECT_URL || "/math/laboratory",
+  math: process.env.NEXT_PUBLIC_MATH_OBJECT_URL || "/laboratory",
   notebook: process.env.NEXT_PUBLIC_NOTEBOOK_OBJECT_URL || "/notebook/workspace",
-  writer: process.env.NEXT_PUBLIC_WRITER_OBJECT_URL || "/writer/new",
+  writer: process.env.NEXT_PUBLIC_WRITER_OBJECT_URL || "/latex",
 };
 
 export const ECOSYSTEM_APPS: Array<{ id: EcosystemApp; label: string }> = [
