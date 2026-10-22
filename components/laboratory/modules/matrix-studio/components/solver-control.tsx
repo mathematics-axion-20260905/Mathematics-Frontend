@@ -1,5 +1,6 @@
 import type { MatrixExperienceLevel, MatrixMode } from "../types";
 import { getMatrixDimensionOptions } from "../matrix-dimension-options";
+import { FormulaQuickPalette } from "@/components/laboratory/formula-quick-palette";
 
 type Props = {
     mode: MatrixMode;
@@ -133,17 +134,22 @@ export function SolverControl({
             </div>
 
             <div className="mt-5 grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-                <label className="space-y-2">
+                <div className="space-y-2">
                     <span className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">Matrix / Tensor Input</span>
+                    <FormulaQuickPalette
+                        onInsert={(snippet) => setMatrixExpression(matrixExpression ? `${matrixExpression}; ${snippet}` : snippet)}
+                        currentMode={mode}
+                        className="mb-2"
+                    />
                     <textarea
                         value={matrixExpression}
                         onChange={(e) => setMatrixExpression(e.target.value)}
-                        rows={7}
+                        rows={6}
                         placeholder={copy.placeholder}
                         spellCheck={false}
-                        className="min-h-[190px] w-full resize-none rounded-3xl border border-border/60 bg-background px-4 py-4 font-mono text-sm leading-7 text-foreground outline-none transition focus:border-accent"
+                        className="min-h-[160px] w-full resize-none rounded-3xl border border-border/60 bg-background px-4 py-4 font-mono text-sm leading-7 text-foreground outline-none transition focus:border-accent"
                     />
-                </label>
+                </div>
 
                 <div className="space-y-4">
                     <label className="block space-y-2">

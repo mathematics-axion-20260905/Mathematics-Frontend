@@ -3,6 +3,7 @@ import { Activity, ChevronDown, Orbit, Save, SlidersHorizontal, Sparkles } from 
 import { LaboratoryInlineMathMarkdown } from "@/components/laboratory/laboratory-inline-math-markdown";
 import { IntegralClassification, IntegralCoordinateSystem, IntegralMode } from "../types";
 import { GeometryLaneBuilder } from "./geometry-lane-builder";
+import { FormulaQuickPalette } from "@/components/laboratory/formula-quick-palette";
 
 interface SolverControlProps {
     mode: IntegralMode;
@@ -307,21 +308,12 @@ export function SolverControl({
                     </div>
 
                     <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                            <div className="text-[10px] font-black uppercase tracking-[0.16em] text-accent">Formula</div>
-                            <div className="flex flex-wrap gap-2">
-                                {["sin()", "cos()", "exp()", "sqrt()", "log()", "pi"].map((snippet) => (
-                                    <button
-                                        key={snippet}
-                                        type="button"
-                                        onClick={() => insertSnippet(snippet)}
-                                        className="rounded-full border border-border/60 bg-background px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground transition hover:border-accent/35 hover:text-foreground"
-                                    >
-                                        {snippet}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                        <div className="text-[10px] font-black uppercase tracking-[0.16em] text-accent">Formula</div>
+                        <FormulaQuickPalette
+                            onInsert={insertSnippet}
+                            currentMode={mode}
+                            className="mt-2 mb-3"
+                        />
                         <textarea
                             value={expression}
                             onChange={(e) => setExpression(e.target.value)}

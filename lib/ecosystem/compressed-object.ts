@@ -1,5 +1,4 @@
 import {
-    SCIENTIFIC_OBJECT_TRANSFER_SCHEMA_VERSION,
     type ScientificObjectTransferEnvelope,
     deserializeScientificObject,
     serializeScientificObject,

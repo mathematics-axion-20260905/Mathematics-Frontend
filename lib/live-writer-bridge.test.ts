@@ -2,10 +2,8 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import {
     createLaboratoryWriterDraftHref,
-    LIVE_WRITER_TARGET_SYNC_STORAGE_KEY,
     createLiveWriterPublishAck,
     createLiveWriterPublishMessage,
-    LIVE_WRITER_TARGETS_STORAGE_KEY,
     extractWriterBridgeTargets,
     flattenStoredWriterTargets,
     markStoredWriterTargetAcknowledged,

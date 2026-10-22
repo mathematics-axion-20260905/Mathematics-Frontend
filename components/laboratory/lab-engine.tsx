@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useMemo, useState, useCallback } from "react";
-import type { Data, Layout, Config } from "plotly.js";
 
 /**
  * LabEngine is the centralized heart of the laboratory modules.
@@ -14,7 +13,7 @@ export interface LabDataset {
     id: string;
     label: string;
     type: LabVisualizationType;
-    data: any[];
+    data: unknown[];
     color?: string;
     visible?: boolean;
 }

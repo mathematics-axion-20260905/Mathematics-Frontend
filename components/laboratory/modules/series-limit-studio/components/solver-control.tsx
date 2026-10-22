@@ -1,6 +1,7 @@
 import React from "react";
 
 import { LaboratoryInlineMathMarkdown } from "@/components/laboratory/laboratory-inline-math-markdown";
+import { FormulaQuickPalette } from "@/components/laboratory/formula-quick-palette";
 
 import { buildSeriesLimitAuxPreview, buildSeriesLimitPreview, inferSeriesLimitMode } from "../series-limit-input";
 import type { SeriesLimitExperienceLevel, SeriesLimitMode, SeriesLimitSummary } from "../types";
@@ -136,17 +137,22 @@ export function SolverControl({
             </div>
 
             <div className="mt-5 grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
-                <label className="space-y-2">
+                <div className="space-y-2">
                     <span className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">Expression</span>
+                    <FormulaQuickPalette
+                        onInsert={(snippet) => setExpression(expression ? `${expression} ${snippet}` : snippet)}
+                        currentMode={mode}
+                        className="mb-2"
+                    />
                     <textarea
                         value={expression}
                         onChange={(event) => setExpression(event.target.value)}
-                        rows={7}
+                        rows={6}
                         spellCheck={false}
                         placeholder={copy.expressionPlaceholder}
-                        className="min-h-[190px] w-full resize-none rounded-3xl border border-border/60 bg-background px-4 py-4 font-mono text-sm leading-7 text-foreground outline-none transition focus:border-accent"
+                        className="min-h-[160px] w-full resize-none rounded-3xl border border-border/60 bg-background px-4 py-4 font-mono text-sm leading-7 text-foreground outline-none transition focus:border-accent"
                     />
-                </label>
+                </div>
                 <div className="space-y-4">
                     <label className="block space-y-2">
                         <span className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">Auxiliary Context</span>

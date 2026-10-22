@@ -341,7 +341,7 @@ export function DifferentialStudioModule({ module }: { module: LaboratoryModuleM
             default:
                 return null;
         }
-    }, [activeTab, actions, copyMarkdownExport, liveTargets, publicationProfile, pushLiveResult, saveError, saveResult, saveState, selectedLiveTargetId, sendToNotebook, sendToWriter, setSelectedLiveTargetId, state, visibleSignals, lastSavedResult?.title]);
+    }, [activeTab, actions, copyMarkdownExport, liveTargets, publicationProfile, pushLiveResult, saveError, saveResult, saveState, selectedLiveTargetId, sendToNotebook, sendToWriter, setSelectedLiveTargetId, state, visibleSignals, lastSavedResult?.title, lastTransfer, transferState, transferError]);
 
     return (
         <div className="flex grow flex-col overflow-hidden rounded-3xl border border-border/40 bg-background/50">

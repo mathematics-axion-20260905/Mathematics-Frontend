@@ -197,7 +197,7 @@ export function MatrixStudioModule({ module }: { module: LaboratoryModuleMeta })
             default:
                 return null;
         }
-    }, [actions, copyMarkdownExport, liveTargets, publicationProfile, pushLiveResult, saveError, saveResult, saveState, selectedLiveTargetId, sendToNotebook, sendToWriter, setSelectedLiveTargetId, state, lastSavedResult?.title]);
+    }, [actions, copyMarkdownExport, liveTargets, publicationProfile, pushLiveResult, saveError, saveResult, saveState, selectedLiveTargetId, sendToNotebook, sendToWriter, setSelectedLiveTargetId, state, lastSavedResult?.title, lastTransfer, transferState, transferError]);
 
     return (
         <div className="flex grow flex-col overflow-hidden rounded-3xl border border-border/40 bg-background/50">

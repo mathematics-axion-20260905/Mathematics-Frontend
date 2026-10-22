@@ -58,7 +58,7 @@ export function CompareView({
                 exactResult: comparisonRows[0]?.[1],
                 numericResult: comparisonRows[0]?.[1],
             }),
-        [comparisonRows, summary],
+        [comparisonRows],
     );
 
     return (

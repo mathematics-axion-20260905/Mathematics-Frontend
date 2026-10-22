@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Check, Mail, User, X } from "lucide-react";
+import { Check, Mail, X } from "lucide-react";
 import {
     connectGmailAccount,
     disconnectEcosystemAccount,
@@ -11,12 +11,13 @@ import {
 } from "@/lib/ecosystem/identity";
 
 export function EcosystemAccountPill() {
-    const [account, setAccount] = useState<EcosystemAccount | null>(null);
+    const [account, setAccount] = useState<EcosystemAccount | null>(() =>
+        typeof window !== "undefined" ? getEcosystemAccount() : null
+    );
     const [isEditing, setIsEditing] = useState(false);
     const [emailInput, setEmailInput] = useState("");
 
     useEffect(() => {
-        setAccount(getEcosystemAccount());
         const unsubscribe = subscribeEcosystemAccount((acc) => {
             setAccount(acc);
         });
@@ -75,7 +76,7 @@ export function EcosystemAccountPill() {
 
                     <form onSubmit={handleSave} className="mt-2.5 space-y-2">
                         <p className="text-[10px] leading-relaxed text-muted-foreground">
-                            Barcha dasturlar (Math, Writer, Notebook) bitta Gmail bilan bog'lanadi va ob'yektlar avtomatik sinxronlanadi.
+                            Barcha dasturlar (Math, Writer, Notebook) bitta Gmail bilan bog&apos;lanadi va ob&apos;yektlar avtomatik sinxronlanadi.
                         </p>
                         <input
                             type="email"

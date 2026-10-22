@@ -72,7 +72,7 @@ const STUDIO_SHOWCASE_SWEEP = {
     count: "5",
 };
 
-export function useIntegralStudio(module: LaboratoryModuleMeta) {
+export function useIntegralStudio(_module: LaboratoryModuleMeta) {
     const { locale } = useLocale();
     const [mode, setMode] = React.useState<IntegralMode>(STUDIO_SHOWCASE_SNAPSHOT.mode);
     const [coordinates, setCoordinates] = React.useState<IntegralCoordinateSystem>(STUDIO_SHOWCASE_SNAPSHOT.coordinates);

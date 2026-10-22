@@ -1,6 +1,7 @@
 import React from "react";
 import { Activity, Orbit, SlidersHorizontal, Sparkles } from "lucide-react";
 import { LaboratoryInlineMathMarkdown } from "@/components/laboratory/laboratory-inline-math-markdown";
+import { FormulaQuickPalette } from "@/components/laboratory/formula-quick-palette";
 import { DifferentialClassification, DifferentialCoordinateSystem, DifferentialExtendedMode } from "../types";
 
 interface SolverControlState {
@@ -465,21 +466,12 @@ export function SolverControl({ state, actions }: SolverControlProps) {
                     </div>
 
                     <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                            <div className="text-[10px] font-black uppercase tracking-[0.16em] text-accent">Formula</div>
-                            <div className="flex flex-wrap gap-2">
-                                {modeSnippets.map((snippet: string) => (
-                                    <button
-                                        key={snippet}
-                                        type="button"
-                                        onClick={() => insertSnippet(snippet)}
-                                        className="rounded-full border border-border/60 bg-background px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground transition hover:border-accent/35 hover:text-foreground"
-                                    >
-                                        {snippet}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                        <div className="text-[10px] font-black uppercase tracking-[0.16em] text-accent">Formula</div>
+                        <FormulaQuickPalette
+                            onInsert={insertSnippet}
+                            currentMode={activeMode}
+                            className="mt-2 mb-3"
+                        />
                         <textarea
                             data-testid="diff-expression-input"
                             value={localExpression}

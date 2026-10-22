@@ -67,7 +67,7 @@ export async function appendLocalObjectRevision<TPayload>(objectId: string, payl
 export async function getLocalScientificObject<TPayload = unknown>(id: string): Promise<ScientificObject<TPayload> | undefined> {
   const db = await openDatabase(); const transaction = db.transaction([OBJECTS_STORE, REVISIONS_STORE], "readonly"); const stored = (await requestResult(transaction.objectStore(OBJECTS_STORE).get(id))) as ScientificObject<TPayload> | undefined;
   if (!stored) { await transactionDone(transaction); db.close(); return undefined; }
-  const storedRevision = (await requestResult(transaction.objectStore(REVISIONS_STORE).get(revisionKey(id, stored.currentRevision)))) as StoredRevision<TPayload> | undefined; await transactionDone(transaction); db.close(); if (!storedRevision) return stored; const { key: _key, ...revision } = storedRevision; return { ...stored, revision };
+  const storedRevision = (await requestResult(transaction.objectStore(REVISIONS_STORE).get(revisionKey(id, stored.currentRevision)))) as StoredRevision<TPayload> | undefined; await transactionDone(transaction); db.close(); if (!storedRevision) return stored; const { key: _key, ...revision } = storedRevision; void _key; return { ...stored, revision };
 }
 
 export async function listLocalScientificObjects<TPayload = unknown>(projectId?: string): Promise<Array<ScientificObject<TPayload>>> {
@@ -75,7 +75,7 @@ export async function listLocalScientificObjects<TPayload = unknown>(projectId?:
 }
 
 export async function getLocalObjectRevision<TPayload = unknown>(objectId: string, revision: number): Promise<ScientificObjectRevision<TPayload> | undefined> {
-  const db = await openDatabase(); const transaction = db.transaction(REVISIONS_STORE, "readonly"); const stored = (await requestResult(transaction.objectStore(REVISIONS_STORE).get(revisionKey(objectId, revision)))) as StoredRevision<TPayload> | undefined; await transactionDone(transaction); db.close(); if (!stored) return undefined; const { key: _key, ...result } = stored; return result;
+  const db = await openDatabase(); const transaction = db.transaction(REVISIONS_STORE, "readonly"); const stored = (await requestResult(transaction.objectStore(REVISIONS_STORE).get(revisionKey(objectId, revision)))) as StoredRevision<TPayload> | undefined; await transactionDone(transaction); db.close(); if (!stored) return undefined; const { key: _key, ...result } = stored; void _key; return result;
 }
 
 export async function createLocalScientificReference(input: { projectId: string; reference: ScientificObjectReference; containerObjectId?: string; role?: string; }): Promise<StoredScientificReference> {
@@ -93,7 +93,7 @@ export async function exportLocalScientificObject<TPayload = unknown>(id: string
   if (!object) { await transactionDone(transaction); db.close(); throw new Error("SCIENTIFIC_OBJECT_NOT_FOUND"); }
   const stored = (await requestResult(transaction.objectStore(REVISIONS_STORE).index("byObject").getAll(id))) as StoredRevision<TPayload>[];
   await transactionDone(transaction); db.close();
-  return serializeScientificObject(object, stored.map(({ key: _key, ...revision }) => revision));
+  return serializeScientificObject(object, stored.map(({ key: _key, ...revision }) => { void _key; return revision; }));
 }
 
 export async function importLocalScientificObject<TPayload = unknown>(serialized: string): Promise<ScientificObject<TPayload>> {

@@ -110,6 +110,7 @@ export interface ScientificObjectTransferEnvelope<TPayload = unknown> {
 
 export function serializeScientificObject<TPayload>(object: ScientificObject<TPayload>, revisions: Array<ScientificObjectRevision<TPayload>> = object.revision ? [object.revision] : []): string {
   const { revision: _currentRevision, ...metadata } = object;
+  void _currentRevision;
   return JSON.stringify({ transferSchemaVersion: SCIENTIFIC_OBJECT_TRANSFER_SCHEMA_VERSION, exportedAt: new Date().toISOString(), object: metadata, revisions } satisfies ScientificObjectTransferEnvelope<TPayload>);
 }
 
