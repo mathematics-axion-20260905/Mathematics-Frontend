@@ -11,6 +11,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { siteJsonLd, siteMetadata } from "@/lib/seo";
 import { LocaleProvider } from "@/components/locale-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const manrope = Manrope({
     subsets: ["latin"],
@@ -39,18 +40,20 @@ export default function MainLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <head>
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }} />
             </head>
-            <body className={`${manrope.variable} ${playfair.variable} min-h-screen`}>
+            <body className={`${manrope.variable} ${playfair.variable} min-h-screen bg-[var(--ax-canvas)] text-[var(--ax-text)]`}>
                 <LocaleProvider>
-                    <div className="flex min-h-screen flex-col">
-                        <EcosystemBar currentApp="math" />
-                        <Navbar />
-                        <main className="relative flex min-h-0 w-full flex-1 flex-col">{children}</main>
-                        <Footer />
-                    </div>
+                    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+                        <div className="flex min-h-screen flex-col">
+                            <EcosystemBar currentApp="math" />
+                            <Navbar />
+                            <main className="relative flex min-h-0 w-full flex-1 flex-col">{children}</main>
+                            <Footer />
+                        </div>
+                    </ThemeProvider>
                 </LocaleProvider>
             </body>
         </html>

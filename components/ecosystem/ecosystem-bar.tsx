@@ -7,6 +7,7 @@ import { getLocalProjectTitle, resolveActiveProjectId } from "@/lib/ecosystem/pr
 import { getRemoteProject } from "@/lib/ecosystem/remote-object-store";
 import { useLocale } from "@/components/locale-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { EcosystemAccountPill } from "./ecosystem-account-pill";
 
 export function EcosystemBar({ currentApp, projectId, projectTitle }: { currentApp: EcosystemApp; projectId?: string | null; projectTitle?: string | null }) {
@@ -51,6 +52,7 @@ export function EcosystemBar({ currentApp, projectId, projectTitle }: { currentA
         </a>
         <EcosystemAccountPill />
         <LanguageSwitcher />
+        <ThemeToggle />
       </div>
     </div>
   );

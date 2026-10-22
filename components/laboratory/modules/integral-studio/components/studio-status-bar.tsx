@@ -27,7 +27,7 @@ export function StudioStatusBar({ cards, resetWorkspace }: StudioStatusBarProps)
     const { locale } = useLocale();
     const translate = (value: string) => locale === "uz" ? UZ_LABELS[value] || value : value;
     return (
-        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/50 bg-background px-4 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,0,0,0.06)] transition-all">
+        <div className="border-t border-border/50 bg-background/80 px-4 py-2 transition-all">
             <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-8">
                 <div className="scrollbar-hide flex flex-1 items-center gap-5 overflow-x-auto pr-4">
                     {cards.map((card) => (

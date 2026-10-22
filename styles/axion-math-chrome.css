@@ -22,6 +22,19 @@
   --radius-panel-strong: var(--ax-radius-floating);
 }
 
+.dark {
+  --background: var(--ax-canvas);
+  --foreground: var(--ax-text);
+  --muted: var(--ax-surface-soft);
+  --muted-foreground: var(--ax-text-soft);
+  --border: var(--ax-line);
+  --surface: var(--ax-surface);
+  --surface-strong: var(--ax-surface-strong);
+  --accent: var(--ax-accent);
+  --accent-soft: var(--ax-accent-soft);
+  --accent-alt: var(--ax-accent-strong);
+}
+
 body {
   background: var(--ax-canvas);
   color: var(--ax-text);

@@ -14,7 +14,7 @@ export default function Footer() {
     if (pathname.startsWith("/laboratory/")) return null;
 
     return (
-        <footer className="border-t border-[var(--ax-line)] bg-white">
+        <footer className="border-t border-[var(--ax-line)] bg-[var(--ax-surface)]">
             <div className="ax-landing-container grid gap-8 py-10 md:grid-cols-[1fr_auto] md:items-end">
                 <div>
                     <div className="font-serif text-[24px] tracking-[-0.035em] text-[var(--ax-text)]">MathSphere</div>

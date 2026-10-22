@@ -13,6 +13,13 @@
   --ax-work-shadow: 0 1px 2px rgb(15 23 42 / 0.025), 0 12px 34px rgb(15 23 42 / 0.045);
 }
 
+.dark {
+  --ax-work-line: color-mix(in srgb, var(--ax-line) 90%, black);
+  --ax-work-line-strong: color-mix(in srgb, var(--ax-line-strong) 90%, black);
+  --ax-work-surface-muted: color-mix(in srgb, var(--ax-surface-soft) 90%, black);
+  --ax-work-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 14px 40px rgb(0 0 0 / 0.45);
+}
+
 .ax-workspace-root {
   min-height: 100%;
   background: var(--ax-canvas);

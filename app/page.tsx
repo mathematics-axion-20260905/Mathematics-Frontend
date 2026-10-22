@@ -108,8 +108,8 @@ export default function HomePage() {
             <div className="grid min-h-[560px] lg:grid-cols-[220px_minmax(0,1fr)]">
               <aside className="border-b border-[var(--ax-line)] bg-[var(--ax-surface-soft)] p-5 lg:border-b-0 lg:border-r lg:p-6">
                 <div className="ax-figure-label">{preview.problem}</div>
-                <div className="mt-4 rounded-[10px] border border-[var(--ax-line)] bg-white p-4 font-serif text-[21px]">∫₀∞ x²e⁻ˣ dx</div>
-                <div className="mt-8 space-y-1.5 text-[11px] font-semibold text-[var(--ax-text-soft)]">{preview.items.map((item,index)=><div key={item} className={`rounded-[7px] px-3 py-2.5 ${index===2?'bg-white text-[var(--ax-text)] shadow-[var(--ax-shadow-subtle)]':''}`}>{item}</div>)}</div>
+                <div className="mt-4 rounded-[10px] border border-[var(--ax-line)] bg-[var(--ax-surface)] p-4 font-serif text-[21px] text-[var(--ax-text)]">∫₀∞ x²e⁻ˣ dx</div>
+                <div className="mt-8 space-y-1.5 text-[11px] font-semibold text-[var(--ax-text-soft)]">{preview.items.map((item,index)=><div key={item} className={`rounded-[7px] px-3 py-2.5 ${index===2?'bg-[var(--ax-surface)] text-[var(--ax-text)] shadow-[var(--ax-shadow-subtle)] border border-[var(--ax-line)]':''}`}>{item}</div>)}</div>
                 <div className="mt-9 border-t border-[var(--ax-line)] pt-5 text-[10px] leading-5 text-[var(--ax-text-faint)]">{preview.footer.map((item) => <span key={item} className="block">{item}</span>)}</div>
               </aside>
               <div className="grid min-w-0 xl:grid-cols-[1.18fr_.82fr]">

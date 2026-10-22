@@ -10,6 +10,28 @@
   color: var(--ax-text);
 }
 
+.dark .ax-landing {
+  background:
+    radial-gradient(circle at 72% 8%, rgb(59 130 246 / 0.08), transparent 26%),
+    linear-gradient(180deg, var(--ax-canvas) 0%, #0d1117 38%, var(--ax-canvas) 100%);
+  color: var(--ax-text);
+}
+
+.dark .ax-premium-nav {
+  background: color-mix(in srgb, var(--ax-surface) 92%, transparent);
+  border-bottom-color: var(--ax-line);
+}
+
+.dark .ax-product-frame {
+  background: var(--ax-surface);
+  border-color: var(--ax-line);
+  box-shadow: 0 20px 60px -20px rgb(0 0 0 / 0.6);
+}
+
+.dark .ax-editorial-row:hover {
+  background: var(--ax-surface-soft);
+}
+
 .ax-landing-section {
   content-visibility: auto;
   contain-intrinsic-size: auto 760px;
