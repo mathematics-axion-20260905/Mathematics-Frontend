@@ -7,6 +7,7 @@ import { getLocalProjectTitle, resolveActiveProjectId } from "@/lib/ecosystem/pr
 import { getRemoteProject } from "@/lib/ecosystem/remote-object-store";
 import { useLocale } from "@/components/locale-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { EcosystemAccountPill } from "./ecosystem-account-pill";
 
 export function EcosystemBar({ currentApp, projectId, projectTitle }: { currentApp: EcosystemApp; projectId?: string | null; projectTitle?: string | null }) {
   const [activeProjectId, setActiveProjectId] = useState(projectId || null);
@@ -48,6 +49,7 @@ export function EcosystemBar({ currentApp, projectId, projectTitle }: { currentA
           <span className="ax-ecosystem-project-label">{labels.project}</span>
           <span className="ax-ecosystem-project-value">{activeProjectTitle || (activeProjectId ? labels.active : labels.local)}</span>
         </a>
+        <EcosystemAccountPill />
         <LanguageSwitcher />
       </div>
     </div>

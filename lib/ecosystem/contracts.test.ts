@@ -64,4 +64,37 @@ describe("Scientific Object transfer envelope", () => {
 
     expect(() => deserializeScientificObject(JSON.stringify(incomplete))).toThrow("INVALID_SCIENTIFIC_OBJECT_TRANSFER_REVISIONS");
   });
+
+  it("losslessly compresses and decompresses scientific object transfer token", async () => {
+    const { compressScientificObject, decompressScientificObject } = await import("./compressed-object");
+    const object: ScientificObject<{ matrix: number[][]; tensor: number[] }> = {
+      id: "sciobj-compress-1",
+      projectId: "proj-1",
+      kind: "calculation",
+      schemaVersion: "1.0",
+      title: "High precision experiment",
+      sourceApp: "math",
+      currentRevision: 1,
+      revision: {
+        objectId: "sciobj-compress-1",
+        revision: 1,
+        payload: {
+          matrix: [[1.23456789012345, 9.87654321098765], [0.0000000001, -3.14159265358979]],
+          tensor: [0.1, 0.2, 0.3, 0.4, 0.5],
+        },
+        provenance: { sourceApp: "math", executionTarget: "this-device", engine: "Axion CAS" },
+      },
+    };
+
+    const envelope = deserializeScientificObject(serializeScientificObject(object));
+    const { token, hash } = await compressScientificObject(envelope);
+
+    expect(token).toBeDefined();
+    expect(token.length).toBeGreaterThan(0);
+
+    const result = await decompressScientificObject(token);
+    expect(result.hash).toBe(hash);
+    expect(result.envelope.object.id).toBe("sciobj-compress-1");
+    expect(result.envelope.revisions[0].payload).toEqual(envelope.revisions[0].payload);
+  });
 });

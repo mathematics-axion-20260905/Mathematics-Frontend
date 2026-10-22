@@ -70,8 +70,8 @@ export async function getLocalScientificObject<TPayload = unknown>(id: string): 
   const storedRevision = (await requestResult(transaction.objectStore(REVISIONS_STORE).get(revisionKey(id, stored.currentRevision)))) as StoredRevision<TPayload> | undefined; await transactionDone(transaction); db.close(); if (!storedRevision) return stored; const { key: _key, ...revision } = storedRevision; return { ...stored, revision };
 }
 
-export async function listLocalScientificObjects<TPayload = unknown>(projectId: string): Promise<Array<ScientificObject<TPayload>>> {
-  const db = await openDatabase(); const transaction = db.transaction(OBJECTS_STORE, "readonly"); const index = transaction.objectStore(OBJECTS_STORE).index("byProject"); const objects = (await requestResult(index.getAll(projectId))) as Array<ScientificObject<TPayload>>; await transactionDone(transaction); db.close(); return objects.sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+export async function listLocalScientificObjects<TPayload = unknown>(projectId?: string): Promise<Array<ScientificObject<TPayload>>> {
+  const db = await openDatabase(); const transaction = db.transaction(OBJECTS_STORE, "readonly"); const store = transaction.objectStore(OBJECTS_STORE); const req = projectId ? store.index("byProject").getAll(projectId) : store.getAll(); const objects = (await requestResult(req)) as Array<ScientificObject<TPayload>>; await transactionDone(transaction); db.close(); return objects.sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
 }
 
 export async function getLocalObjectRevision<TPayload = unknown>(objectId: string, revision: number): Promise<ScientificObjectRevision<TPayload> | undefined> {
